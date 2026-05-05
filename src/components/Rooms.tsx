@@ -48,6 +48,7 @@ export default function Rooms({
   getPresenceColor,
 }: Props) {
   const [newRoomName, setNewRoomName] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [unreadByRoom, setUnreadByRoom] = useState<Record<string, number>>({});
   const [unreadStateByRoom, setUnreadStateByRoom] = useState<
     Record<
@@ -70,6 +71,7 @@ export default function Rooms({
   useEffect(() => {
     const refreshUnread = () => {
       const currentUserName = currentUser?.name ?? '';
+      const normalizedUserName = currentUserName.toLowerCase().trim();
       const roomStates = getUnreadRoomStateByRoom(currentUserId, currentUserName);
       const roomMessages = readRoomMessages();
 
@@ -82,7 +84,10 @@ export default function Rooms({
         }
 
         const existing = acc[message.roomId];
-        const isMention = roomState.hasMention && message.content.toLowerCase().includes(currentUserName.toLowerCase());
+        const isMention =
+          Boolean(normalizedUserName) &&
+          roomState.hasMention &&
+          message.content.toLowerCase().includes(normalizedUserName);
 
         if (!existing) {
           acc[message.roomId] = {
@@ -148,6 +153,29 @@ export default function Rooms({
     });
   }, [rooms, employees, unreadByRoom, unreadStateByRoom, unreadPreviewByRoom]);
 
+  const filteredRoomStats = useMemo(() => {
+    const normalizedSearch = searchValue.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return roomStats;
+    }
+
+    return roomStats.filter(({ room }) => {
+      return (
+        room.name.toLowerCase().includes(normalizedSearch) ||
+        room.floor.toLowerCase().includes(normalizedSearch)
+      );
+    });
+  }, [roomStats, searchValue]);
+
+  const totalOnline = useMemo(() => {
+    return roomStats.reduce((sum, room) => sum + room.onlineCount, 0);
+  }, [roomStats]);
+
+  const totalUnread = useMemo(() => {
+    return roomStats.reduce((sum, room) => sum + room.unreadCount, 0);
+  }, [roomStats]);
+
   const handleAddRoom = () => {
     const name = newRoomName.trim();
     if (!name) return;
@@ -162,6 +190,21 @@ export default function Rooms({
         <div>
           <h2 style={styles.title}>Miestnosti</h2>
           <p style={styles.subtitle}>Správa virtuálnych miestností</p>
+        </div>
+      </div>
+
+      <div style={styles.summaryGrid}>
+        <div style={styles.summaryItem}>
+          <div style={styles.summaryValue}>{rooms.length}</div>
+          <div style={styles.summaryLabel}>miestností</div>
+        </div>
+        <div style={styles.summaryItem}>
+          <div style={styles.summaryValue}>{totalOnline}</div>
+          <div style={styles.summaryLabel}>ľudí online</div>
+        </div>
+        <div style={styles.summaryItem}>
+          <div style={styles.summaryValue}>{totalUnread}</div>
+          <div style={styles.summaryLabel}>neprečítané</div>
         </div>
       </div>
 
@@ -190,98 +233,109 @@ export default function Rooms({
         </button>
       </div>
 
+      <input
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        placeholder="Hľadať miestnosť alebo poschodie..."
+        style={styles.searchInput}
+      />
+
       <div style={styles.list}>
-        {roomStats.map(
-          ({ room, totalCount, onlineCount, unreadCount, hasMention, mentionCount, unreadPreview }) => {
-            const isSelected = selectedRoomId === room.id;
+        {filteredRoomStats.length === 0 ? (
+          <div style={styles.emptyBox}>Nenašla sa žiadna miestnosť.</div>
+        ) : (
+          filteredRoomStats.map(
+            ({ room, totalCount, onlineCount, unreadCount, hasMention, mentionCount, unreadPreview }) => {
+              const isSelected = selectedRoomId === room.id;
 
-            return (
-              <div
-                key={room.id}
-                style={{
-                  ...styles.roomCard,
-                  ...(isSelected ? styles.roomCardActive : {}),
-                  ...(hasMention ? styles.roomCardMention : {}),
-                }}
-              >
-                <button onClick={() => onSelectRoom(room.id)} style={styles.roomMainButton}>
-                  <div style={styles.roomTopRow}>
-                    <div style={styles.roomTitleWrap}>
-                      <div style={styles.roomName}># {room.name}</div>
-
-                      {hasMention && mentionCount > 0 && (
-                        <div style={styles.mentionBadge}>
-                          @{mentionCount > 99 ? '99+' : mentionCount}
-                        </div>
-                      )}
-
-                      {!hasMention && unreadCount > 0 && (
-                        <div style={styles.unreadBadge}>
-                          {unreadCount > 99 ? '99+' : unreadCount}
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={styles.roomBadge}>{totalCount}</div>
-                  </div>
-
-                  <div style={styles.roomMeta}>
-                    <span
-                      style={{
-                        ...styles.onlineDot,
-                        background: onlineCount > 0 ? getPresenceColor('online') : '#d1d5db',
-                      }}
-                    />
-                    {onlineCount} online / {totalCount} spolu
-                  </div>
-
-                  {unreadPreview ? (
-                    <div
-                      style={{
-                        ...styles.unreadPreviewBox,
-                        ...(hasMention ? styles.unreadPreviewBoxMention : {}),
-                      }}
-                    >
-                      <div
-                        style={{
-                          ...styles.unreadPreviewAuthor,
-                          ...(hasMention ? styles.unreadPreviewAuthorMention : {}),
-                        }}
-                      >
-                        {unreadPreview.message.authorName}
-                      </div>
-                      <div
-                        style={{
-                          ...styles.unreadPreviewText,
-                          ...(hasMention ? styles.unreadPreviewTextMention : {}),
-                        }}
-                      >
-                        {truncatePreview(unreadPreview.message.content)}
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={styles.floorText}>{room.floor}</div>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => onDeleteRoom(room.id)}
-                  disabled={rooms.length <= 1}
-                  title={
-                    rooms.length <= 1
-                      ? 'Poslednú miestnosť nie je možné zmazať'
-                      : 'Zmazať miestnosť'
-                  }
+              return (
+                <div
+                  key={room.id}
                   style={{
-                    ...styles.deleteButton,
-                    ...(rooms.length <= 1 ? styles.deleteButtonDisabled : {}),
+                    ...styles.roomCard,
+                    ...(isSelected ? styles.roomCardActive : {}),
+                    ...(hasMention ? styles.roomCardMention : {}),
                   }}
                 >
-                  Zmazať
-                </button>
-              </div>
-            );
-          }
+                  <button onClick={() => onSelectRoom(room.id)} style={styles.roomMainButton}>
+                    <div style={styles.roomTopRow}>
+                      <div style={styles.roomTitleWrap}>
+                        <div style={styles.roomName}># {room.name}</div>
+
+                        {hasMention && mentionCount > 0 && (
+                          <div style={styles.mentionBadge}>
+                            @{mentionCount > 99 ? '99+' : mentionCount}
+                          </div>
+                        )}
+
+                        {!hasMention && unreadCount > 0 && (
+                          <div style={styles.unreadBadge}>
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={styles.roomBadge}>{totalCount}</div>
+                    </div>
+
+                    <div style={styles.roomMeta}>
+                      <span
+                        style={{
+                          ...styles.onlineDot,
+                          background: onlineCount > 0 ? getPresenceColor('online') : '#d1d5db',
+                        }}
+                      />
+                      {onlineCount} online / {totalCount} spolu
+                    </div>
+
+                    {unreadPreview ? (
+                      <div
+                        style={{
+                          ...styles.unreadPreviewBox,
+                          ...(hasMention ? styles.unreadPreviewBoxMention : {}),
+                        }}
+                      >
+                        <div
+                          style={{
+                            ...styles.unreadPreviewAuthor,
+                            ...(hasMention ? styles.unreadPreviewAuthorMention : {}),
+                          }}
+                        >
+                          {unreadPreview.message.authorName}
+                        </div>
+                        <div
+                          style={{
+                            ...styles.unreadPreviewText,
+                            ...(hasMention ? styles.unreadPreviewTextMention : {}),
+                          }}
+                        >
+                          {truncatePreview(unreadPreview.message.content)}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={styles.floorText}>{room.floor}</div>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => onDeleteRoom(room.id)}
+                    disabled={rooms.length <= 1}
+                    title={
+                      rooms.length <= 1
+                        ? 'Poslednú miestnosť nie je možné zmazať'
+                        : 'Zmazať miestnosť'
+                    }
+                    style={{
+                      ...styles.deleteButton,
+                      ...(rooms.length <= 1 ? styles.deleteButtonDisabled : {}),
+                    }}
+                  >
+                    Zmazať
+                  </button>
+                </div>
+              );
+            }
+          )
         )}
       </div>
     </div>
@@ -314,10 +368,34 @@ const styles: Record<string, CSSProperties> = {
     color: '#6b7280',
     fontSize: 14,
   },
+  summaryGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+    gap: 10,
+    marginBottom: 16,
+  },
+  summaryItem: {
+    border: '1px solid #e5e7eb',
+    background: '#f9fafb',
+    borderRadius: 14,
+    padding: '12px 14px',
+  },
+  summaryValue: {
+    fontSize: 22,
+    fontWeight: 900,
+    color: '#111827',
+    lineHeight: 1,
+  },
+  summaryLabel: {
+    marginTop: 6,
+    fontSize: 12,
+    fontWeight: 700,
+    color: '#6b7280',
+  },
   addRoomBox: {
     display: 'flex',
     gap: 12,
-    marginBottom: 18,
+    marginBottom: 12,
     flexWrap: 'wrap',
   },
   input: {
@@ -329,6 +407,16 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 14,
     boxSizing: 'border-box',
     background: '#fff',
+  },
+  searchInput: {
+    width: '100%',
+    padding: '12px 14px',
+    borderRadius: 12,
+    border: '1px solid #d1d5db',
+    fontSize: 14,
+    boxSizing: 'border-box',
+    background: '#fff',
+    marginBottom: 18,
   },
   primaryButton: {
     padding: '11px 14px',
@@ -347,6 +435,16 @@ const styles: Record<string, CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
+  },
+  emptyBox: {
+    padding: 18,
+    borderRadius: 14,
+    border: '1px dashed #d1d5db',
+    background: '#f9fafb',
+    color: '#6b7280',
+    fontSize: 14,
+    fontWeight: 700,
+    textAlign: 'center',
   },
   roomCard: {
     display: 'flex',
