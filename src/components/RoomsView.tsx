@@ -135,9 +135,25 @@ export default function RoomsView({
                   <button
                     key={room.id}
                     onClick={() => setOpenedRoomId(room.id)}
-                    className="group flex min-h-[210px] flex-col items-center justify-center rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-[0_18px_45px_rgba(15,23,42,0.10)] transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.16)]"
+                    className={[
+                      "group relative flex min-h-[210px] flex-col items-center justify-center rounded-[28px] border p-6 text-center transition hover:-translate-y-1",
+                      hasCall
+                        ? "animate-pulse border-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.16),0_24px_60px_rgba(239,68,68,0.16)]"
+                        : "border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.10)] hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.16)]",
+                    ].join(" ")}
                   >
-                    <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-950 text-white transition group-hover:scale-105">
+                    {hasCall ? (
+                      <div className="absolute right-4 top-4 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
+                        LIVE
+                      </div>
+                    ) : null}
+
+                    <div
+                      className={[
+                        "mb-5 flex h-20 w-20 items-center justify-center rounded-2xl text-white transition group-hover:scale-105",
+                        hasCall ? "bg-red-600" : "bg-slate-950",
+                      ].join(" ")}
+                    >
                       <Building2 size={44} />
                     </div>
 
@@ -149,7 +165,7 @@ export default function RoomsView({
                       </span>
 
                       {hasCall ? (
-                        <span className="rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-600">
+                        <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-600">
                           prebieha hovor
                         </span>
                       ) : (
