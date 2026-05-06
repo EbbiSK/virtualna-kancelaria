@@ -6,13 +6,13 @@ export const PROFILE_UPDATED_EVENT = "virtualna-kancelaria-profile-updated";
 export type UserProfileData = {
   firstName: string;
   lastName: string;
-  avatar?: string;
+  photo: string;
 };
 
 const DEFAULT_PROFILE: UserProfileData = {
   firstName: "",
   lastName: "",
-  avatar: "",
+  photo: "",
 };
 
 function saveProfile(profile: UserProfileData) {
@@ -26,7 +26,12 @@ export default function UserProfile() {
     if (!saved) return DEFAULT_PROFILE;
 
     try {
-      return JSON.parse(saved) as UserProfileData;
+      const parsed = JSON.parse(saved);
+      return {
+        firstName: parsed.firstName || parsed.name || "",
+        lastName: parsed.lastName || "",
+        photo: parsed.photo || parsed.avatar || "",
+      };
     } catch {
       return DEFAULT_PROFILE;
     }
@@ -39,14 +44,16 @@ export default function UserProfile() {
     saveProfile(profile);
   }, [profile]);
 
-  const handleFile = (file: File) => {
+  const handlePhotoUpload = (file: File) => {
     const reader = new FileReader();
+
     reader.onload = () => {
       setProfile((prev) => ({
         ...prev,
-        avatar: reader.result as string,
+        photo: String(reader.result || ""),
       }));
     };
+
     reader.readAsDataURL(file);
   };
 
@@ -54,64 +61,62 @@ export default function UserProfile() {
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow">
       <div className="mb-4 text-lg font-bold">Profil</div>
 
-      {/* AVATAR */}
-      <div className="mb-4 flex items-center gap-4">
-        {profile.avatar ? (
+      <div className="mb-5 flex items-center gap-4">
+        {profile.photo ? (
           <img
-            src={profile.avatar}
-            alt="avatar"
-            className="h-16 w-16 rounded-full object-cover border"
+            src={profile.photo}
+            alt="Profilová fotka"
+            className="h-16 w-16 rounded-full border border-slate-200 object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-sm text-slate-500">
-            bez foto
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">
+            Foto
           </div>
         )}
 
-        <label className="cursor-pointer rounded border px-3 py-2 text-sm hover:bg-slate-50">
-          Nahrať fotku
+        <label className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+          Pridať fotku
           <input
             type="file"
-            className="hidden"
             accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleFile(file);
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) handlePhotoUpload(file);
             }}
           />
         </label>
       </div>
 
-      {/* MENO */}
       <div className="mb-3">
-        <label className="block text-sm text-slate-500">Meno</label>
+        <label className="mb-1 block text-sm text-slate-500">Meno</label>
         <input
           value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="w-full rounded border px-3 py-2"
+          onChange={(event) => setFirstName(event.target.value)}
+          className="w-full rounded-xl border border-slate-300 px-3 py-2"
+          placeholder="Meno"
         />
       </div>
 
-      {/* PRIEZVISKO */}
       <div className="mb-4">
-        <label className="block text-sm text-slate-500">Priezvisko</label>
+        <label className="mb-1 block text-sm text-slate-500">Priezvisko</label>
         <input
           value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="w-full rounded border px-3 py-2"
+          onChange={(event) => setLastName(event.target.value)}
+          className="w-full rounded-xl border border-slate-300 px-3 py-2"
+          placeholder="Priezvisko"
         />
       </div>
 
-      {/* SAVE */}
       <button
         onClick={() =>
-          setProfile({
+          setProfile((prev) => ({
+            ...prev,
             firstName: firstName.trim(),
             lastName: lastName.trim(),
-            avatar: profile.avatar,
-          })
+          }))
         }
-        className="rounded bg-slate-900 px-4 py-2 text-white"
+        className="rounded-xl bg-slate-950 px-4 py-2 font-medium text-white hover:bg-slate-800"
       >
         Uložiť
       </button>
