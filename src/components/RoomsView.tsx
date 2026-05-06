@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { Building2, Paperclip, Search, Send, Users, Video } from "lucide-react";
 import type { MessageAttachment, Room, RoomMessage } from "../types";
@@ -39,6 +39,16 @@ export default function RoomsView({
   handleFilePick,
 }: RoomsViewProps) {
   const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    if (!openedRoom) return;
+
+    const firstPersonInRoom = openedRoom.people[0];
+
+    if (firstPersonInRoom?.name) {
+      setCurrentUserName(firstPersonInRoom.name);
+    }
+  }, [openedRoom, setCurrentUserName]);
 
   const filteredRooms = useMemo(() => {
     const search = searchValue.trim().toLowerCase();
