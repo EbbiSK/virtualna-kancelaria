@@ -4,16 +4,16 @@ export const PROFILE_KEY = "virtualna-kancelaria-profile";
 export const PROFILE_UPDATED_EVENT = "virtualna-kancelaria-profile-updated";
 
 export type UserProfileData = {
-  name: string;
-  avatar: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
 };
 
 const DEFAULT_PROFILE: UserProfileData = {
-  name: "Používateľ",
-  avatar: "🙂",
+  firstName: "",
+  lastName: "",
+  avatar: "",
 };
-
-const AVATARS = ["🙂", "🧑‍💻", "👨‍💼", "👩‍💼", "🎨", "🚀", "🐱", "🐶"];
 
 function saveProfile(profile: UserProfileData) {
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -32,54 +32,89 @@ export default function UserProfile() {
     }
   });
 
-  const [editingName, setEditingName] = useState(profile.name);
+  const [firstName, setFirstName] = useState(profile.firstName);
+  const [lastName, setLastName] = useState(profile.lastName);
 
   useEffect(() => {
     saveProfile(profile);
   }, [profile]);
 
+  const handleFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setProfile((prev) => ({
+        ...prev,
+        avatar: reader.result as string,
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow">
       <div className="mb-4 text-lg font-bold">Profil</div>
 
-      <div className="mb-4 flex items-center gap-3">
-        <div className="text-3xl">{profile.avatar}</div>
+      {/* AVATAR */}
+      <div className="mb-4 flex items-center gap-4">
+        {profile.avatar ? (
+          <img
+            src={profile.avatar}
+            alt="avatar"
+            className="h-16 w-16 rounded-full object-cover border"
+          />
+        ) : (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-sm text-slate-500">
+            bez foto
+          </div>
+        )}
 
+        <label className="cursor-pointer rounded border px-3 py-2 text-sm hover:bg-slate-50">
+          Nahrať fotku
+          <input
+            type="file"
+            className="hidden"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleFile(file);
+            }}
+          />
+        </label>
+      </div>
+
+      {/* MENO */}
+      <div className="mb-3">
+        <label className="block text-sm text-slate-500">Meno</label>
         <input
-          value={editingName}
-          onChange={(e) => setEditingName(e.target.value)}
-          className="rounded border px-2 py-1"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          className="w-full rounded border px-3 py-2"
         />
-
-        <button
-          onClick={() =>
-            setProfile((prev) => ({
-              ...prev,
-              name: editingName.trim() || "Používateľ",
-            }))
-          }
-          className="rounded bg-slate-900 px-3 py-1 text-white"
-        >
-          Uložiť
-        </button>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {AVATARS.map((avatar) => (
-          <button
-            key={avatar}
-            onClick={() => setProfile((prev) => ({ ...prev, avatar }))}
-            className={[
-              "rounded border px-2 py-1 text-xl",
-              profile.avatar === avatar
-                ? "border-slate-900 bg-slate-100"
-                : "border-slate-300",
-            ].join(" ")}
-          >
-            {avatar}
-          </button>
-        ))}
+      {/* PRIEZVISKO */}
+      <div className="mb-4">
+        <label className="block text-sm text-slate-500">Priezvisko</label>
+        <input
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          className="w-full rounded border px-3 py-2"
+        />
       </div>
+
+      {/* SAVE */}
+      <button
+        onClick={() =>
+          setProfile({
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            avatar: profile.avatar,
+          })
+        }
+        className="rounded bg-slate-900 px-4 py-2 text-white"
+      >
+        Uložiť
+      </button>
     </div>
   );
 }
