@@ -21,10 +21,47 @@ import type {
   UserAccount,
 } from "./types";
 
+function resizeImage(file: File, callback: (dataUrl: string) => void) {
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    const img = new Image();
+
+    img.onload = () => {
+      const maxSize = 900;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height && width > maxSize) {
+        height = Math.round((height * maxSize) / width);
+        width = maxSize;
+      }
+
+      if (height >= width && height > maxSize) {
+        width = Math.round((width * maxSize) / height);
+        height = maxSize;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      callback(canvas.toDataURL("image/jpeg", 0.75));
+    };
+
+    img.src = String(reader.result || "");
+  };
+
+  reader.readAsDataURL(file);
+}
+
 export default function App() {
-  const [view, setView] = useState<"home" | "rooms" | "settings" | "auth">(
-    "home"
-  );
+  const [view, setView] = useState<"home" | "rooms" | "settings" | "auth">("home");
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [openedRoomId, setOpenedRoomId] = useState<string | null>(null);
   const [newRoomName, setNewRoomName] = useState("");
@@ -73,7 +110,11 @@ export default function App() {
   }, [rooms]);
 
   useEffect(() => {
-    localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+    try {
+      localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+    } catch {
+      alert("Fotka je príliš veľká na uloženie v prehliadači.");
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -252,25 +293,20 @@ export default function App() {
   };
 
   const handleFilePick = (file: File) => {
-    if (!file) return;
+    if (!openedRoomId) return;
 
-    const reader = new FileReader();
+    if (!file.type.startsWith("image/")) {
+      alert("Zatiaľ podporujeme iba obrázky.");
+      return;
+    }
 
-    reader.onload = () => {
-      if (!reader.result) return;
-
+    resizeImage(file, (dataUrl) => {
       sendMessage({
         name: file.name,
-        type: file.type || "application/octet-stream",
-        dataUrl: reader.result as string,
+        type: "image/jpeg",
+        dataUrl,
       });
-    };
-
-    reader.onerror = () => {
-      console.error("Chyba pri čítaní súboru");
-    };
-
-    reader.readAsDataURL(file);
+    });
   };
 
   return (
