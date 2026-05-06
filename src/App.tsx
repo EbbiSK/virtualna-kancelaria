@@ -22,7 +22,9 @@ import type {
 } from "./types";
 
 export default function App() {
-  const [view, setView] = useState<"home" | "rooms" | "settings" | "auth">("home");
+  const [view, setView] = useState<"home" | "rooms" | "settings" | "auth">(
+    "home"
+  );
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [openedRoomId, setOpenedRoomId] = useState<string | null>(null);
   const [newRoomName, setNewRoomName] = useState("");
@@ -250,35 +252,22 @@ export default function App() {
   };
 
   const handleFilePick = (file: File) => {
-    if (!openedRoomId) return;
-
-    const roomId = openedRoomId;
-    const author = currentUserName.trim() || "Používateľ";
+    if (!file) return;
 
     const reader = new FileReader();
 
     reader.onload = () => {
-      const dataUrl = String(reader.result || "");
+      if (!reader.result) return;
 
-      if (!dataUrl) return;
+      sendMessage({
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        dataUrl: reader.result as string,
+      });
+    };
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          roomId,
-          author,
-          text: messageText.trim(),
-          createdAt: new Date().toLocaleString("sk-SK"),
-          attachment: {
-            name: file.name,
-            type: file.type || "application/octet-stream",
-            dataUrl,
-          },
-        },
-      ]);
-
-      setMessageText("");
+    reader.onerror = () => {
+      console.error("Chyba pri čítaní súboru");
     };
 
     reader.readAsDataURL(file);
