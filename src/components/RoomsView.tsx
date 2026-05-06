@@ -35,7 +35,6 @@ export default function RoomsView({
   messageText,
   setMessageText,
   sendMessage,
-  fileInputRef,
   handleFilePick,
 }: RoomsViewProps) {
   const [searchValue, setSearchValue] = useState("");
@@ -179,9 +178,7 @@ export default function RoomsView({
                     </div>
 
                     {room.projectName ? (
-                      <div className="mt-3 text-sm text-slate-500">
-                        {room.projectName}
-                      </div>
+                      <div className="mt-3 text-sm text-slate-500">{room.projectName}</div>
                     ) : null}
                   </button>
                 );
@@ -233,9 +230,7 @@ export default function RoomsView({
                   </div>
 
                   {openedRoom.people.length === 0 ? (
-                    <p className="text-slate-300">
-                      V hovore zatiaľ nie sú zamestnanci.
-                    </p>
+                    <p className="text-slate-300">V hovore zatiaľ nie sú zamestnanci.</p>
                   ) : (
                     <div className="grid gap-3 md:grid-cols-2">
                       {openedRoom.people.map((person: RoomPerson) => (
@@ -339,24 +334,22 @@ export default function RoomsView({
                   className="w-full rounded-xl border border-slate-300 px-4 py-3"
                 />
 
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    if (file) handleFilePick(file);
-                    event.target.value = "";
-                  }}
-                />
-
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="rounded-xl border border-slate-300 px-4"
-                  title="Priložiť súbor alebo obrázok"
+                <label
+                  className="flex cursor-pointer items-center justify-center rounded-xl border border-slate-300 px-4 hover:bg-slate-50"
+                  title="Priložiť fotku"
                 >
                   <Paperclip size={20} />
-                </button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) handleFilePick(file);
+                      event.target.value = "";
+                    }}
+                  />
+                </label>
 
                 <button
                   onClick={() => sendMessage()}
