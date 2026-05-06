@@ -22,9 +22,7 @@ import type {
 } from "./types";
 
 export default function App() {
-  const [view, setView] = useState<"home" | "rooms" | "settings" | "auth">(
-    "home"
-  );
+  const [view, setView] = useState<"home" | "rooms" | "settings" | "auth">("home");
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [openedRoomId, setOpenedRoomId] = useState<string | null>(null);
   const [newRoomName, setNewRoomName] = useState("");
@@ -252,14 +250,35 @@ export default function App() {
   };
 
   const handleFilePick = (file: File) => {
+    if (!openedRoomId) return;
+
+    const roomId = openedRoomId;
+    const author = currentUserName.trim() || "Používateľ";
+
     const reader = new FileReader();
 
     reader.onload = () => {
-      sendMessage({
-        name: file.name,
-        type: file.type,
-        dataUrl: String(reader.result),
-      });
+      const dataUrl = String(reader.result || "");
+
+      if (!dataUrl) return;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          roomId,
+          author,
+          text: messageText.trim(),
+          createdAt: new Date().toLocaleString("sk-SK"),
+          attachment: {
+            name: file.name,
+            type: file.type || "application/octet-stream",
+            dataUrl,
+          },
+        },
+      ]);
+
+      setMessageText("");
     };
 
     reader.readAsDataURL(file);
