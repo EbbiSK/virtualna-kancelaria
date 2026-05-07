@@ -1,4 +1,4 @@
-import { Building2, UserRound } from "lucide-react";
+import { Building2, UserRound, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   PROFILE_KEY,
@@ -35,6 +35,10 @@ export default function Header({
 }: HeaderProps) {
   const [profile, setProfile] = useState<UserProfileData>(() => loadProfile());
 
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
   useEffect(() => {
     const updateProfile = () => {
       setProfile(loadProfile());
@@ -47,6 +51,16 @@ export default function Header({
     };
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
     <header className="flex h-[76px] items-center justify-between border-b border-slate-200 px-10">
       <div className="flex items-center gap-3 text-2xl font-bold">
@@ -56,6 +70,29 @@ export default function Header({
 
       {loggedUserEmail ? (
         <div className="flex items-center gap-3">
+
+          {/* 🌙 TOGGLE */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2"
+          >
+            <Sun size={16} />
+
+            <div
+              className={`relative h-5 w-10 rounded-full transition ${
+                darkMode ? "bg-purple-500" : "bg-slate-300"
+              }`}
+            >
+              <div
+                className={`absolute top-1 left-1 h-3 w-3 rounded-full bg-white transition ${
+                  darkMode ? "translate-x-5" : ""
+                }`}
+              />
+            </div>
+
+            <Moon size={16} />
+          </button>
+
           <div className="flex items-center gap-3 rounded-xl border border-slate-300 px-4 py-2">
             <div className="text-2xl">{profile.avatar}</div>
             <div className="text-sm font-medium">{profile.name}</div>
