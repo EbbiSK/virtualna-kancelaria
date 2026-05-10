@@ -1,3 +1,5 @@
+import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { Room } from "../types";
 import UserProfile from "./UserProfile";
 
@@ -15,6 +17,8 @@ type SettingsViewProps = {
   goHome: () => void;
 };
 
+const DARK_MODE_KEY = "virtualna-kancelaria-dark-mode";
+
 export default function SettingsView({
   rooms,
   newRoomName,
@@ -26,6 +30,26 @@ export default function SettingsView({
   removePerson,
   goHome,
 }: SettingsViewProps) {
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem(DARK_MODE_KEY) === "true";
+  });
+
+  useEffect(() => {
+    const html = document.documentElement;
+
+    if (darkMode) {
+      html.classList.add("dark");
+    } else {
+      html.classList.remove("dark");
+    }
+
+    localStorage.setItem(DARK_MODE_KEY, String(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
+
   return (
     <main className="mx-auto max-w-3xl p-10">
       <button
@@ -37,12 +61,42 @@ export default function SettingsView({
 
       <h1 className="mb-6 text-3xl font-bold">Nastavenia</h1>
 
-      {/* PROFIL */}
+      <div className="mb-8 flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow">
+        <div>
+          <div className="text-lg font-bold">Vzhľad aplikácie</div>
+          <div className="text-sm text-slate-500">
+            Prepínanie medzi svetlou a tmavou témou
+          </div>
+        </div>
+
+        <button
+          onClick={toggleDarkMode}
+          className="flex items-center gap-3 rounded-2xl border border-slate-300 px-4 py-2"
+        >
+          <Sun size={18} />
+
+          <div
+            className={[
+              "relative h-6 w-11 rounded-full transition",
+              darkMode ? "bg-slate-950" : "bg-slate-300",
+            ].join(" ")}
+          >
+            <div
+              className={[
+                "absolute top-1 h-4 w-4 rounded-full bg-white transition",
+                darkMode ? "left-6" : "left-1",
+              ].join(" ")}
+            />
+          </div>
+
+          <Moon size={18} />
+        </button>
+      </div>
+
       <div className="mb-8">
         <UserProfile />
       </div>
 
-      {/* PRIDANIE MIESTNOSTI */}
       <div className="mb-6 flex gap-2">
         <input
           value={newRoomName}
@@ -59,7 +113,6 @@ export default function SettingsView({
         </button>
       </div>
 
-      {/* ZOZNAM MIESTNOSTÍ */}
       {rooms.map((room) => (
         <div key={room.id} className="mb-4 rounded border p-4">
           <input
@@ -71,6 +124,7 @@ export default function SettingsView({
           />
 
           <label className="block text-sm">Dátum vzniku</label>
+
           <input
             type="date"
             value={room.createdAt}
@@ -81,6 +135,7 @@ export default function SettingsView({
           />
 
           <label className="block text-sm">Termín porád</label>
+
           <input
             value={room.meetingTerm}
             onChange={(e) =>
@@ -90,6 +145,7 @@ export default function SettingsView({
           />
 
           <label className="block text-sm">Projekt</label>
+
           <input
             value={room.projectName}
             onChange={(e) =>
@@ -98,10 +154,10 @@ export default function SettingsView({
             className="mb-3 w-full border px-2 py-1"
           />
 
-          {/* ĽUDIA */}
           {room.people.map((person) => (
             <div key={person.id} className="flex justify-between">
               <span>{person.name}</span>
+
               <button
                 onClick={() => removePerson(room.id, person.id)}
                 className="text-red-500"
