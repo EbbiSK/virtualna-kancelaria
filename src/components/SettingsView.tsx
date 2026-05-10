@@ -1,9 +1,10 @@
-import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
 import type { Room } from "../types";
-import UserProfile from "./UserProfile";
 
-type EditableRoomKey = "name" | "createdAt" | "meetingTerm" | "projectName";
+type EditableRoomKey =
+  | "name"
+  | "createdAt"
+  | "meetingTerm"
+  | "projectName";
 
 type SettingsViewProps = {
   rooms: Room[];
@@ -17,8 +18,6 @@ type SettingsViewProps = {
   goHome: () => void;
 };
 
-const DARK_MODE_KEY = "virtualna-kancelaria-dark-mode";
-
 export default function SettingsView({
   rooms,
   newRoomName,
@@ -30,160 +29,162 @@ export default function SettingsView({
   removePerson,
   goHome,
 }: SettingsViewProps) {
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem(DARK_MODE_KEY) === "true";
-  });
-
-  useEffect(() => {
-    const html = document.documentElement;
-
-    if (darkMode) {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
-
-    localStorage.setItem(DARK_MODE_KEY, String(darkMode));
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
-
   return (
-    <main className="mx-auto max-w-3xl p-10">
+    <main className="mx-auto max-w-4xl p-10">
       <button
         onClick={goHome}
-        className="mb-6 rounded border px-4 py-2"
+        className="mb-6 rounded-2xl border border-green-200 bg-white px-5 py-3 font-medium shadow"
       >
         ← späť
       </button>
 
-      <h1 className="mb-6 text-3xl font-bold">Nastavenia</h1>
+      <h1 className="mb-8 text-4xl font-extrabold text-green-800">
+        Nastavenia
+      </h1>
 
-      <div className="mb-8 flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow">
-        <div>
-          <div className="text-lg font-bold">Vzhľad aplikácie</div>
-          <div className="text-sm text-slate-500">
-            Prepínanie medzi svetlou a tmavou témou
-          </div>
-        </div>
+      {/* NÁZOV FIRMY */}
+      <div className="mb-8 rounded-3xl border border-green-200 bg-white p-6 shadow">
+        <h2 className="mb-4 text-2xl font-bold text-green-800">
+          Názov firmy
+        </h2>
 
-        <button
-          onClick={toggleDarkMode}
-          className="flex items-center gap-3 rounded-2xl border border-slate-300 px-4 py-2"
-        >
-          <Sun size={18} />
+        <input
+          type="text"
+          defaultValue={
+            localStorage.getItem("virtual-office-company-name") ||
+            "Virtuálna kancelária"
+          }
+          placeholder="Názov firmy"
+          className="mb-4 w-full rounded-2xl border border-green-200 px-4 py-3"
+          onChange={(e) => {
+            localStorage.setItem(
+              "virtual-office-company-name",
+              e.target.value
+            );
 
-          <div
-            className={[
-              "relative h-6 w-11 rounded-full transition",
-              darkMode ? "bg-slate-950" : "bg-slate-300",
-            ].join(" ")}
-          >
-            <div
-              className={[
-                "absolute top-1 h-4 w-4 rounded-full bg-white transition",
-                darkMode ? "left-6" : "left-1",
-              ].join(" ")}
-            />
-          </div>
+            window.dispatchEvent(new Event("storage"));
+          }}
+        />
 
-          <Moon size={18} />
-        </button>
+        <p className="text-sm text-slate-500">
+          Tento názov sa zobrazí v hornom menu aplikácie.
+        </p>
       </div>
 
-      <div className="mb-8">
-        <UserProfile />
-      </div>
-
-      <div className="mb-6 flex gap-2">
+      {/* PRIDANIE MIESTNOSTI */}
+      <div className="mb-8 flex gap-3">
         <input
           value={newRoomName}
           onChange={(e) => setNewRoomName(e.target.value)}
           placeholder="Nová miestnosť"
-          className="w-full rounded border px-3 py-2"
+          className="w-full rounded-2xl border border-green-200 bg-white px-4 py-3 shadow"
         />
 
         <button
           onClick={addRoom}
-          className="rounded border px-4"
+          className="rounded-2xl bg-orange-500 px-6 py-3 font-bold text-white shadow transition hover:bg-orange-600"
         >
           Pridať
         </button>
       </div>
 
-      {rooms.map((room) => (
-        <div key={room.id} className="mb-4 rounded border p-4">
-          <input
-            value={room.name}
-            onChange={(e) =>
-              updateRoom(room.id, "name", e.target.value)
-            }
-            className="mb-3 w-full text-lg font-bold"
-          />
+      {/* ZOZNAM MIESTNOSTÍ */}
+      <div className="space-y-6">
+        {rooms.map((room) => (
+          <div
+            key={room.id}
+            className="rounded-3xl border border-green-200 bg-white p-6 shadow"
+          >
+            <input
+              value={room.name}
+              onChange={(e) =>
+                updateRoom(room.id, "name", e.target.value)
+              }
+              className="mb-5 w-full text-2xl font-extrabold"
+            />
 
-          <label className="block text-sm">Dátum vzniku</label>
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium">
+                Dátum vzniku
+              </label>
 
-          <input
-            type="date"
-            value={room.createdAt}
-            onChange={(e) =>
-              updateRoom(room.id, "createdAt", e.target.value)
-            }
-            className="mb-3 w-full border px-2 py-1"
-          />
+              <input
+                type="date"
+                value={room.createdAt}
+                onChange={(e) =>
+                  updateRoom(room.id, "createdAt", e.target.value)
+                }
+                className="w-full rounded-xl border border-green-200 px-3 py-2"
+              />
+            </div>
 
-          <label className="block text-sm">Termín porád</label>
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium">
+                Termín porád
+              </label>
 
-          <input
-            value={room.meetingTerm}
-            onChange={(e) =>
-              updateRoom(room.id, "meetingTerm", e.target.value)
-            }
-            className="mb-3 w-full border px-2 py-1"
-          />
+              <input
+                value={room.meetingTerm}
+                onChange={(e) =>
+                  updateRoom(room.id, "meetingTerm", e.target.value)
+                }
+                className="w-full rounded-xl border border-green-200 px-3 py-2"
+              />
+            </div>
 
-          <label className="block text-sm">Projekt</label>
+            <div className="mb-5">
+              <label className="mb-2 block text-sm font-medium">
+                Projekt
+              </label>
 
-          <input
-            value={room.projectName}
-            onChange={(e) =>
-              updateRoom(room.id, "projectName", e.target.value)
-            }
-            className="mb-3 w-full border px-2 py-1"
-          />
+              <input
+                value={room.projectName}
+                onChange={(e) =>
+                  updateRoom(room.id, "projectName", e.target.value)
+                }
+                className="w-full rounded-xl border border-green-200 px-3 py-2"
+              />
+            </div>
 
-          {room.people.map((person) => (
-            <div key={person.id} className="flex justify-between">
-              <span>{person.name}</span>
+            {/* ĽUDIA */}
+            <div className="mb-5 space-y-2">
+              {room.people.map((person) => (
+                <div
+                  key={person.id}
+                  className="flex items-center justify-between rounded-xl border border-green-100 bg-green-50 px-4 py-3"
+                >
+                  <span>{person.name}</span>
+
+                  <button
+                    onClick={() =>
+                      removePerson(room.id, person.id)
+                    }
+                    className="rounded-lg bg-red-500 px-3 py-1 text-sm font-bold text-white"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => addPerson(room.id)}
+                className="rounded-2xl bg-orange-500 px-5 py-3 font-bold text-white shadow transition hover:bg-orange-600"
+              >
+                + zamestnanec
+              </button>
 
               <button
-                onClick={() => removePerson(room.id, person.id)}
-                className="text-red-500"
+                onClick={() => deleteRoom(room.id)}
+                className="rounded-2xl border border-red-300 bg-red-50 px-5 py-3 font-bold text-red-600"
               >
-                X
+                zrušiť miestnosť
               </button>
             </div>
-          ))}
-
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={() => addPerson(room.id)}
-              className="rounded border px-3 py-1"
-            >
-              + zamestnanec
-            </button>
-
-            <button
-              onClick={() => deleteRoom(room.id)}
-              className="rounded border px-3 py-1 text-red-500"
-            >
-              zrušiť miestnosť
-            </button>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </main>
   );
 }
