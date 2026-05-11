@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Building2, UserRound, ImagePlus } from "lucide-react";
+import { Upload } from "lucide-react";
 
 type HeaderProps = {
   loggedUserEmail: string | null;
@@ -15,7 +15,7 @@ export default function Header({
   logout,
   openAuth,
 }: HeaderProps) {
-  const [companyName, setCompanyName] = useState("Virtuálna kancelária");
+  const [companyName, setCompanyName] = useState("Rentulo");
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,86 +46,77 @@ export default function Header({
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-green-200 bg-white px-10 py-6">
-      <div className="flex items-center gap-5">
-        <label className="group relative flex h-24 w-24 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-green-300 bg-green-50 transition hover:bg-green-100">
-          <input
-            type="file"
-            accept="image/png,image/jpeg,image/svg+xml"
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
+    <header className="border-b border-green-100 bg-white px-10 py-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <label className="flex h-[126px] w-[126px] cursor-pointer flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-green-300 bg-green-50 transition hover:bg-green-100">
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/svg+xml"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
 
-              if (file) {
-                handleLogoUpload(file);
-              }
+                if (file) {
+                  handleLogoUpload(file);
+                }
 
-              event.target.value = "";
-            }}
-          />
-
-          {companyLogo ? (
-            <img
-              src={companyLogo}
-              alt="Logo firmy"
-              className="h-20 w-20 rounded-xl object-contain"
+                event.target.value = "";
+              }}
             />
-          ) : (
-            <>
-              <ImagePlus size={28} className="mb-2 text-green-700" />
 
-              <div className="text-center text-sm font-bold text-green-700">
-                VLOŽIŤ
-                <br />
-                LOGO
-              </div>
+            {companyLogo ? (
+              <img
+                src={companyLogo}
+                alt="Logo firmy"
+                className="h-20 w-20 object-contain"
+              />
+            ) : (
+              <>
+                <Upload size={34} className="mb-2 text-green-700" />
 
-              <div className="mt-1 text-[10px] text-green-600">
-                JPG, PNG, SVG
-              </div>
-            </>
-          )}
-        </label>
+                <div className="text-center text-[16px] font-black text-green-700">
+                  VLOŽIŤ
+                  <br />
+                  LOGO
+                </div>
 
-        <div className="flex items-center gap-3">
-          <div className="rounded-2xl bg-green-700 p-3 text-white shadow-lg">
-            <Building2 size={28} />
-          </div>
+                <div className="mt-2 text-[11px] font-semibold text-green-600">
+                  JPG, PNG, SVG
+                </div>
+              </>
+            )}
+          </label>
 
           <div>
-            <div className="text-4xl font-black tracking-tight text-green-800">
+            <div className="text-6xl font-black tracking-tight text-green-700">
               {companyName}
             </div>
+          </div>
+        </div>
 
-            <div className="mt-1 text-sm text-green-600">
-              Virtuálne pracovné prostredie
+        {loggedUserEmail ? (
+          <div className="flex items-center gap-4">
+            <div className="rounded-2xl border border-green-200 bg-green-50 px-6 py-4 text-xl font-bold text-green-700">
+              {loggedUserEmail}
             </div>
-          </div>
-        </div>
-      </div>
 
-      {loggedUserEmail ? (
-        <div className="flex items-center gap-4">
-          <div className="rounded-2xl border border-green-200 bg-green-50 px-5 py-3 font-semibold text-green-700">
-            {loggedUserEmail}
+            <button
+              onClick={logout}
+              className="rounded-2xl bg-orange-500 px-8 py-4 text-xl font-black text-white shadow-lg transition hover:bg-orange-600"
+            >
+              Odhlásiť
+            </button>
           </div>
-
+        ) : (
           <button
-            onClick={logout}
-            className="rounded-2xl bg-orange-500 px-6 py-3 font-bold text-white shadow-md transition hover:bg-orange-600"
+            onClick={openAuth}
+            className="rounded-2xl bg-orange-500 px-8 py-4 text-xl font-black text-white shadow-lg transition hover:bg-orange-600"
           >
-            Odhlásiť
+            Prihlásenie
           </button>
-        </div>
-      ) : (
-        <button
-          onClick={openAuth}
-          className="flex items-center gap-3 rounded-2xl bg-orange-500 px-6 py-3 font-bold text-white shadow-md transition hover:bg-orange-600"
-        >
-          <UserRound size={22} />
-          Prihlásenie
-        </button>
-      )}
+        )}
+      </div>
     </header>
   );
 }
