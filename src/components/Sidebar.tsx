@@ -1,83 +1,92 @@
-import {
-  Bell,
-  Building2,
-  Calendar,
-  File,
-  Home,
-  MessageCircle,
-  Phone,
-  Settings,
-  X,
-} from "lucide-react";
-
-type SidebarItemProps = {
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-  badge?: string | number;
+type SidebarProps = {
+  activePage: string;
+  setActivePage: (page: string) => void;
+  avatar?: string;
 };
 
-function SidebarItem({
-  icon,
-  label,
-  active = false,
-  badge,
-}: SidebarItemProps) {
-  return (
-    <button
-      type="button"
-      className={[
-        "flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition",
-        active
-          ? "bg-[#2b2b66] text-white"
-          : "text-slate-300 hover:bg-white/[0.05] hover:text-white",
-      ].join(" ")}
-    >
-      <span className="flex items-center gap-3">
-        <span className="text-slate-300">{icon}</span>
-        <span className="text-[17px] font-medium">{label}</span>
-      </span>
+const menu = [
+  { name: "Dashboard", icon: "🏠" },
+  { name: "Miestnosti", icon: "🏢" },
+  { name: "Chat", icon: "💬" },
+  { name: "Kalendár", icon: "📅" },
+  { name: "Nastavenia", icon: "⚙️" },
+];
 
-      {badge ? (
-        <span className="rounded-full bg-violet-500 px-2 py-0.5 text-xs font-semibold text-white">
-          {badge}
-        </span>
-      ) : null}
-    </button>
-  );
-}
-
-export function Sidebar() {
+export default function Sidebar({
+  activePage,
+  setActivePage,
+  avatar,
+}: SidebarProps) {
   return (
-    <div className="flex min-h-[calc(100vh-48px)] flex-col rounded-[28px] border border-white/8 bg-[#111c31] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-      <div>
-        <div className="mb-8 flex items-center gap-3 px-2">
-          <div className="rounded-2xl bg-violet-500/20 p-2 text-violet-300">
-            <Building2 size={22} />
+    <aside className="hidden w-72 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 xl:flex">
+      <div className="border-b border-zinc-100 p-6 dark:border-zinc-800">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-orange-400 text-2xl font-black text-white shadow-lg">
+            E
           </div>
+
           <div>
-            <p className="text-xl font-semibold text-white">Virtuálna kancelária</p>
+            <h1 className="text-xl font-black text-zinc-900 dark:text-white">
+              Ebbi Office
+            </h1>
+
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Virtual Workspace
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <SidebarItem icon={<Home size={18} />} label="Prehľad" active />
-          <SidebarItem icon={<Building2 size={18} />} label="Miestnosti" />
-          <SidebarItem
-            icon={<MessageCircle size={18} />}
-            label="Priame správy"
-            badge={3}
-          />
-          <SidebarItem icon={<File size={18} />} label="Súbory" />
-          <SidebarItem icon={<Phone size={18} />} label="Hovory" />
-          <SidebarItem icon={<Calendar size={18} />} label="Kalendár" />
+      <nav className="flex-1 space-y-2 p-4">
+        {menu.map((item) => {
+          const isActive = activePage === item.name;
+
+          return (
+            <button
+              key={item.name}
+              onClick={() => setActivePage(item.name)}
+              className={`flex w-full items-center gap-4 rounded-2xl px-4 py-4 text-left transition-all duration-300 ${
+                isActive
+                  ? "bg-gradient-to-r from-green-500 to-orange-400 text-white shadow-lg"
+                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              }`}
+            >
+              <span className="text-2xl">{item.icon}</span>
+              <span className="font-semibold">{item.name}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
+        <div className="flex items-center gap-3 rounded-2xl bg-zinc-100 p-3 dark:bg-zinc-800">
+          <div className="relative">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-green-500 to-orange-400 font-black text-white">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt="User avatar"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                "J"
+              )}
+            </div>
+
+            <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500 dark:border-zinc-800" />
+          </div>
+
+          <div>
+            <div className="font-semibold text-zinc-900 dark:text-white">
+              Jaroslav
+            </div>
+
+            <div className="text-sm text-zinc-500 dark:text-zinc-400">
+              Online
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="mt-auto space-y-2 pt-6">
-        <SidebarItem icon={<Settings size={18} />} label="Nastavenia" />
-        <SidebarItem icon={<X size={18} />} label="Odhlásiť sa" />
-      </div>
-    </div>
+    </aside>
   );
 }
