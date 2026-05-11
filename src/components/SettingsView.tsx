@@ -1,10 +1,8 @@
+import { Upload } from "lucide-react";
+import { useState } from "react";
 import type { Room } from "../types";
 
-type EditableRoomKey =
-  | "name"
-  | "createdAt"
-  | "meetingTerm"
-  | "projectName";
+type EditableRoomKey = "name" | "createdAt" | "meetingTerm" | "projectName";
 
 type SettingsViewProps = {
   rooms: Room[];
@@ -18,6 +16,9 @@ type SettingsViewProps = {
   goHome: () => void;
 };
 
+const COMPANY_NAME_KEY = "virtual-office-company-name";
+const COMPANY_LOGO_KEY = "virtual-office-company-logo";
+
 export default function SettingsView({
   rooms,
   newRoomName,
@@ -29,6 +30,24 @@ export default function SettingsView({
   removePerson,
   goHome,
 }: SettingsViewProps) {
+  const [companyLogo, setCompanyLogo] = useState<string | null>(() =>
+    localStorage.getItem(COMPANY_LOGO_KEY)
+  );
+
+  const handleLogoUpload = (file: File) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = String(reader.result);
+
+      localStorage.setItem(COMPANY_LOGO_KEY, result);
+      setCompanyLogo(result);
+      window.dispatchEvent(new Event("storage"));
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   return (
     <main className="mx-auto max-w-4xl p-10">
       <button
@@ -42,40 +61,76 @@ export default function SettingsView({
         Nastavenia
       </h1>
 
-      {/* NÁZOV FIRMY */}
       <div className="mb-8 rounded-3xl border border-green-200 bg-white p-6 shadow">
         <h2 className="mb-4 text-2xl font-bold text-green-800">
-          Názov firmy
+          Firemná identita
         </h2>
 
-        <input
-          type="text"
-          defaultValue={
-            localStorage.getItem("virtual-office-company-name") ||
-            "Virtuálna kancelária"
-          }
-          placeholder="Názov firmy"
-          className="mb-4 w-full rounded-2xl border border-green-200 px-4 py-3"
-          onChange={(e) => {
-            localStorage.setItem(
-              "virtual-office-company-name",
-              e.target.value
-            );
+        <div className="mb-6 flex items-center gap-5">
+          <label className="flex h-28 w-28 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-green-300 bg-green-50 transition hover:bg-green-100">
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/svg+xml"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
 
-            window.dispatchEvent(new Event("storage"));
-          }}
-        />
+                if (file) {
+                  handleLogoUpload(file);
+                }
 
-        <p className="text-sm text-slate-500">
-          Tento názov sa zobrazí v hornom menu aplikácie.
-        </p>
+                event.target.value = "";
+              }}
+            />
+
+            {companyLogo ? (
+              <img
+                src={companyLogo}
+                alt="Logo firmy"
+                className="h-20 w-20 object-contain"
+              />
+            ) : (
+              <>
+                <Upload size={28} className="mb-2 text-green-700" />
+                <div className="text-center text-sm font-black text-green-700">
+                  VLOŽIŤ
+                  <br />
+                  LOGO
+                </div>
+              </>
+            )}
+          </label>
+
+          <div className="flex-1">
+            <label className="mb-2 block text-sm font-bold text-green-700">
+              Názov firmy
+            </label>
+
+            <input
+              type="text"
+              defaultValue={
+                localStorage.getItem(COMPANY_NAME_KEY) ||
+                "Virtuálna kancelária"
+              }
+              placeholder="Názov firmy"
+              className="w-full rounded-2xl border border-green-200 px-4 py-3"
+              onChange={(event) => {
+                localStorage.setItem(COMPANY_NAME_KEY, event.target.value);
+                window.dispatchEvent(new Event("storage"));
+              }}
+            />
+
+            <p className="mt-2 text-sm text-slate-500">
+              Logo a názov sa zobrazia v hornom menu aplikácie.
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* PRIDANIE MIESTNOSTI */}
       <div className="mb-8 flex gap-3">
         <input
           value={newRoomName}
-          onChange={(e) => setNewRoomName(e.target.value)}
+          onChange={(event) => setNewRoomName(event.target.value)}
           placeholder="Nová miestnosť"
           className="w-full rounded-2xl border border-green-200 bg-white px-4 py-3 shadow"
         />
@@ -88,7 +143,6 @@ export default function SettingsView({
         </button>
       </div>
 
-      {/* ZOZNAM MIESTNOSTÍ */}
       <div className="space-y-6">
         {rooms.map((room) => (
           <div
@@ -97,8 +151,8 @@ export default function SettingsView({
           >
             <input
               value={room.name}
-              onChange={(e) =>
-                updateRoom(room.id, "name", e.target.value)
+              onChange={(event) =>
+                updateRoom(room.id, "name", event.target.value)
               }
               className="mb-5 w-full text-2xl font-extrabold"
             />
@@ -111,8 +165,8 @@ export default function SettingsView({
               <input
                 type="date"
                 value={room.createdAt}
-                onChange={(e) =>
-                  updateRoom(room.id, "createdAt", e.target.value)
+                onChange={(event) =>
+                  updateRoom(room.id, "createdAt", event.target.value)
                 }
                 className="w-full rounded-xl border border-green-200 px-3 py-2"
               />
@@ -125,28 +179,25 @@ export default function SettingsView({
 
               <input
                 value={room.meetingTerm}
-                onChange={(e) =>
-                  updateRoom(room.id, "meetingTerm", e.target.value)
+                onChange={(event) =>
+                  updateRoom(room.id, "meetingTerm", event.target.value)
                 }
                 className="w-full rounded-xl border border-green-200 px-3 py-2"
               />
             </div>
 
             <div className="mb-5">
-              <label className="mb-2 block text-sm font-medium">
-                Projekt
-              </label>
+              <label className="mb-2 block text-sm font-medium">Projekt</label>
 
               <input
                 value={room.projectName}
-                onChange={(e) =>
-                  updateRoom(room.id, "projectName", e.target.value)
+                onChange={(event) =>
+                  updateRoom(room.id, "projectName", event.target.value)
                 }
                 className="w-full rounded-xl border border-green-200 px-3 py-2"
               />
             </div>
 
-            {/* ĽUDIA */}
             <div className="mb-5 space-y-2">
               {room.people.map((person) => (
                 <div
@@ -156,9 +207,7 @@ export default function SettingsView({
                   <span>{person.name}</span>
 
                   <button
-                    onClick={() =>
-                      removePerson(room.id, person.id)
-                    }
+                    onClick={() => removePerson(room.id, person.id)}
                     className="rounded-lg bg-red-500 px-3 py-1 text-sm font-bold text-white"
                   >
                     X
