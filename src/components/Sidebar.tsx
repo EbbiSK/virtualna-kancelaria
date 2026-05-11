@@ -1,92 +1,158 @@
+import {
+  LayoutDashboard,
+  Building2,
+  MessageSquare,
+  CalendarDays,
+  Settings,
+  X,
+} from "lucide-react";
+
+import { useNavigate, useLocation } from "react-router-dom";
+
 type SidebarProps = {
-  activePage: string;
-  setActivePage: (page: string) => void;
   avatar?: string;
+  mobileOpen?: boolean;
+  setMobileOpen?: (open: boolean) => void;
 };
 
 const menu = [
-  { name: "Dashboard", icon: "🏠" },
-  { name: "Miestnosti", icon: "🏢" },
-  { name: "Chat", icon: "💬" },
-  { name: "Kalendár", icon: "📅" },
-  { name: "Nastavenia", icon: "⚙️" },
+  {
+    name: "Dashboard",
+    path: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "Miestnosti",
+    path: "/rooms",
+    icon: Building2,
+  },
+  {
+    name: "Chat",
+    path: "/chat",
+    icon: MessageSquare,
+  },
+  {
+    name: "Kalendár",
+    path: "/calendar",
+    icon: CalendarDays,
+  },
+  {
+    name: "Nastavenia",
+    path: "/settings",
+    icon: Settings,
+  },
 ];
 
 export default function Sidebar({
-  activePage,
-  setActivePage,
   avatar,
+  mobileOpen = false,
+  setMobileOpen,
 }: SidebarProps) {
+  const navigate = useNavigate();
+
+  const location = useLocation();
+
+  function handleNavigate(path: string) {
+    navigate(path);
+
+    setMobileOpen?.(false);
+  }
+
   return (
-    <aside className="hidden w-72 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 xl:flex">
-      <div className="border-b border-zinc-100 p-6 dark:border-zinc-800">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-orange-400 text-2xl font-black text-white shadow-lg">
-            E
-          </div>
+    <>
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen?.(false)}
+          className="fixed inset-0 z-40 bg-black/40 xl:hidden"
+        />
+      )}
 
-          <div>
-            <h1 className="text-xl font-black text-zinc-900 dark:text-white">
-              Ebbi Office
-            </h1>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-200 bg-white transition-transform duration-300 dark:border-zinc-800 dark:bg-zinc-900 xl:static xl:translate-x-0 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="border-b border-zinc-100 p-5 dark:border-zinc-800">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-600 text-lg font-black text-white">
+                E
+              </div>
 
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Virtual Workspace
-            </p>
-          </div>
-        </div>
-      </div>
+              <div>
+                <h1 className="text-lg font-black text-zinc-900 dark:text-white">
+                  Ebbi Office
+                </h1>
 
-      <nav className="flex-1 space-y-2 p-4">
-        {menu.map((item) => {
-          const isActive = activePage === item.name;
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Workspace
+                </p>
+              </div>
+            </div>
 
-          return (
             <button
-              key={item.name}
-              onClick={() => setActivePage(item.name)}
-              className={`flex w-full items-center gap-4 rounded-2xl px-4 py-4 text-left transition-all duration-300 ${
-                isActive
-                  ? "bg-gradient-to-r from-green-500 to-orange-400 text-white shadow-lg"
-                  : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              }`}
+              onClick={() => setMobileOpen?.(false)}
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 xl:hidden"
             >
-              <span className="text-2xl">{item.icon}</span>
-              <span className="font-semibold">{item.name}</span>
+              <X size={18} />
             </button>
-          );
-        })}
-      </nav>
-
-      <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
-        <div className="flex items-center gap-3 rounded-2xl bg-zinc-100 p-3 dark:bg-zinc-800">
-          <div className="relative">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-green-500 to-orange-400 font-black text-white">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt="User avatar"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                "J"
-              )}
-            </div>
-
-            <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500 dark:border-zinc-800" />
           </div>
+        </div>
 
-          <div>
-            <div className="font-semibold text-zinc-900 dark:text-white">
-              Jaroslav
+        <nav className="flex-1 space-y-1 p-3">
+          {menu.map((item) => {
+            const isActive = location.pathname === item.path;
+
+            const Icon = item.icon;
+
+            return (
+              <button
+                key={item.name}
+                onClick={() => handleNavigate(item.path)}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <Icon size={18} />
+
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-zinc-100 p-3 dark:border-zinc-800">
+          <div className="flex items-center gap-3 rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800">
+            <div className="relative">
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-green-600 text-sm font-black text-white">
+                {avatar ? (
+                  <img
+                    src={avatar}
+                    alt="User avatar"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  "J"
+                )}
+              </div>
+
+              <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500 dark:border-zinc-800" />
             </div>
 
-            <div className="text-sm text-zinc-500 dark:text-zinc-400">
-              Online
+            <div>
+              <div className="text-sm font-bold text-zinc-900 dark:text-white">
+                Jaroslav
+              </div>
+
+              <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                Online
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

@@ -46,10 +46,7 @@ export default function OfficeChat() {
   });
 
   useEffect(() => {
-    localStorage.setItem(
-      "officeChatMessages",
-      JSON.stringify(messages)
-    );
+    localStorage.setItem("officeChatMessages", JSON.stringify(messages));
   }, [messages]);
 
   function sendMessage() {
@@ -69,67 +66,66 @@ export default function OfficeChat() {
     };
 
     setMessages([...messages, newMessage]);
-
     setInputValue("");
   }
 
   function clearChat() {
     localStorage.removeItem("officeChatMessages");
-
     setMessages(defaultMessages);
   }
 
   return (
-    <div className="rounded-3xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center justify-between border-b border-zinc-100 px-6 py-5 dark:border-zinc-800">
         <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-white">
+          <h2 className="text-xl font-black text-zinc-900 dark:text-white">
             Firemný Chat
           </h2>
 
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Realtime komunikácia tímu
+            Tímová komunikácia
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={clearChat}
-            className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-          >
-            Vymazať
-          </button>
-
-          <div className="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-            Online
-          </div>
-        </div>
+        <button
+          onClick={clearChat}
+          className="rounded-xl bg-zinc-50 px-3 py-2 text-sm font-bold text-zinc-600 transition hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+        >
+          Vymazať
+        </button>
       </div>
 
-      <div className="max-h-96 space-y-4 overflow-y-auto p-6">
+      <div className="max-h-96 space-y-1 overflow-y-auto p-4">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.own ? "justify-end" : "justify-start"}`}
+            className="group rounded-xl px-3 py-3 transition hover:bg-zinc-50 dark:hover:bg-zinc-800"
           >
-            <div
-              className={`max-w-md rounded-3xl px-5 py-4 shadow-sm ${
-                msg.own
-                  ? "bg-gradient-to-r from-green-500 to-orange-400 text-white"
-                  : "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white"
-              }`}
-            >
-              <div className="mb-1 text-xs font-bold opacity-70">
-                {msg.user}
+            <div className="flex items-start gap-3">
+              <div
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
+                  msg.own
+                    ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                }`}
+              >
+                {msg.user.charAt(0)}
               </div>
 
-              <div className="text-sm leading-relaxed">
-                {msg.message}
-              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                    {msg.user}
+                  </span>
 
-              <div className="mt-2 text-right text-xs opacity-60">
-                {msg.time}
+                  <span className="text-xs text-zinc-400">
+                    {msg.time}
+                  </span>
+                </div>
+
+                <p className="mt-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                  {msg.message}
+                </p>
               </div>
             </div>
           </div>
@@ -148,12 +144,12 @@ export default function OfficeChat() {
               }
             }}
             placeholder="Napíš správu..."
-            className="flex-1 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
           />
 
           <button
             onClick={sendMessage}
-            className="rounded-2xl bg-gradient-to-r from-green-500 to-orange-400 px-6 py-3 font-semibold text-white shadow-md transition hover:scale-[1.02]"
+            className="rounded-xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400"
           >
             Odoslať
           </button>

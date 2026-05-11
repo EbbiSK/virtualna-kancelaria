@@ -1,67 +1,65 @@
+import {
+  Video,
+  Users,
+  FolderOpen,
+  Settings,
+} from "lucide-react";
+
 const actions = [
   {
     id: 1,
-    title: "Nový Meeting",
-    icon: "📹",
-    color: "from-green-500 to-emerald-400",
+    title: "Meeting",
+    icon: Video,
   },
   {
     id: 2,
-    title: "Pozvať člena",
-    icon: "👥",
-    color: "from-orange-500 to-amber-400",
+    title: "Pozvať",
+    icon: Users,
   },
   {
     id: 3,
-    title: "Zdieľať súbor",
-    icon: "📁",
-    color: "from-lime-500 to-green-400",
+    title: "Súbor",
+    icon: FolderOpen,
   },
   {
     id: 4,
-    title: "Nastavenia",
-    icon: "⚙️",
-    color: "from-yellow-500 to-orange-400",
+    title: "Settings",
+    icon: Settings,
   },
 ];
 
 export default function QuickActions() {
   return (
-    <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-
-      <div className="mb-6">
-        <h2 className="text-2xl font-black text-zinc-900 dark:text-white">
+    <div className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 md:p-6">
+      <div className="mb-4 md:mb-5">
+        <h2 className="text-lg font-black text-zinc-900 dark:text-white md:text-xl">
           Quick Actions
         </h2>
 
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Rýchle akcie virtuálnej kancelárie
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 md:text-sm">
+          Rýchle akcie kancelárie
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {actions.map((action) => (
-          <button
-            key={action.id}
-            className="group relative overflow-hidden rounded-3xl border border-zinc-100 bg-zinc-50 p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950"
-          >
-            <div
-              className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 transition-opacity duration-300 group-hover:opacity-10`}
-            />
+      <div className="grid grid-cols-2 gap-3">
+        {actions.map((action) => {
+          const Icon = action.icon;
 
-            <div className="relative">
-              <div
-                className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${action.color} text-2xl shadow-lg`}
-              >
-                {action.icon}
+          return (
+            <button
+              key={action.id}
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-4 text-center transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800 md:flex-row md:justify-start md:px-4 md:text-left"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-zinc-700 shadow-sm dark:bg-zinc-800 dark:text-zinc-300">
+                <Icon size={18} />
               </div>
 
-              <div className="mt-4 text-sm font-bold text-zinc-900 dark:text-white">
+              <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 md:text-sm">
                 {action.title}
-              </div>
-            </div>
-          </button>
-        ))}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

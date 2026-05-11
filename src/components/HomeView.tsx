@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
-import OfficeHeader from "./OfficeHeader";
 import OfficeStats from "./OfficeStats";
 import QuickActions from "./QuickActions";
 import RoomsGrid from "./RoomsGrid";
 import UpcomingMeetings from "./UpcomingMeetings";
-import EmployeeStatusList from "./EmployeeStatusList";
 import OfficeChat from "./OfficeChat";
-import ActivityFeed from "./ActivityFeed";
-import AIAssistant from "./AIAssistant";
 import SettingsPanel from "./SettingsPanel";
 
 export default function HomeView() {
-  const [activePage, setActivePage] = useState("Dashboard");
+  const location = useLocation();
+
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("darkMode");
@@ -38,9 +37,7 @@ export default function HomeView() {
 
     reader.onload = () => {
       const result = reader.result as string;
-
       setAvatar(result);
-
       localStorage.setItem("userAvatar", result);
     };
 
@@ -49,52 +46,66 @@ export default function HomeView() {
 
   function removeAvatar() {
     setAvatar("");
-
     localStorage.removeItem("userAvatar");
   }
 
   return (
     <div className={darkMode ? "dark" : ""}>
-      <div className="flex min-h-screen bg-white dark:bg-zinc-950">
+      <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
         <Sidebar
-          activePage={activePage}
-          setActivePage={setActivePage}
           avatar={avatar}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
         />
 
-        <main className="flex-1 px-6 py-10">
-          <div className="mx-auto max-w-7xl space-y-8">
-            <TopBar darkMode={darkMode} setDarkMode={setDarkMode} />
+        <main className="min-w-0 flex-1 px-4 py-6 md:px-6 md:py-8">
+          <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
+            <TopBar
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              setMobileOpen={setMobileOpen}
+            />
 
-            {activePage === "Dashboard" && (
+            {location.pathname === "/dashboard" && (
               <>
-                <OfficeHeader />
+                <section className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h1 className="text-3xl font-black tracking-tight text-zinc-900 dark:text-white md:text-4xl">
+                      Ahoj, Jaroslav!
+                    </h1>
+
+                    <p className="mt-2 text-base text-zinc-500 dark:text-zinc-400 md:text-lg">
+                      Vitaj vo svojej virtuálnej kancelárii
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-zinc-100 bg-white px-5 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                    <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                      Dnes
+                    </p>
+
+                    <p className="mt-1 text-lg font-black text-zinc-900 dark:text-white">
+                      Aktívny pracovný deň
+                    </p>
+                  </div>
+                </section>
 
                 <OfficeStats />
 
-                <QuickActions />
-
-                <RoomsGrid />
-
-                <UpcomingMeetings />
-
-                <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
-                  <EmployeeStatusList />
-
-                  <OfficeChat />
-
-                  <ActivityFeed />
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                  <QuickActions />
+                  <UpcomingMeetings />
                 </div>
               </>
             )}
 
-            {activePage === "Miestnosti" && <RoomsGrid />}
+            {location.pathname === "/rooms" && <RoomsGrid />}
 
-            {activePage === "Chat" && <OfficeChat />}
+            {location.pathname === "/chat" && <OfficeChat />}
 
-            {activePage === "Kalendár" && <UpcomingMeetings />}
+            {location.pathname === "/calendar" && <UpcomingMeetings />}
 
-            {activePage === "Nastavenia" && (
+            {location.pathname === "/settings" && (
               <SettingsPanel
                 avatar={avatar}
                 onAvatarUpload={handleAvatarUpload}
@@ -102,19 +113,11 @@ export default function HomeView() {
               />
             )}
 
-            <div className="mt-12 flex items-center justify-center gap-3 text-lg text-green-700 dark:text-green-400">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-700 font-black text-white shadow-md">
-                E
-              </div>
-
-              <span>
-                Developed by <strong>Ebbi</strong>
-              </span>
+            <div className="pt-8 text-center text-sm font-semibold text-zinc-400">
+              Developed by Ebbi
             </div>
           </div>
         </main>
-
-        <AIAssistant />
       </div>
     </div>
   );
