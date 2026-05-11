@@ -10,12 +10,15 @@ export default function App() {
       <Route path="/dashboard" element={<HomeView />} />
 
       <Route path="/rooms" element={<HomeView />} />
+      <Route path="/rooms/:roomSlug" element={<HomeView />} />
 
       <Route path="/chat" element={<HomeView />} />
 
       <Route path="/calendar" element={<HomeView />} />
 
       <Route path="/settings" element={<HomeView />} />
+
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }
