@@ -38,14 +38,24 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
 
   return (
     <div className="flex items-center justify-between">
-      <button
-        onClick={() => setMobileOpen?.(true)}
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-sm transition hover:border-green-500 xl:hidden"
-      >
-        <Menu size={18} />
-      </button>
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setMobileOpen?.(true)}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-sm transition hover:border-green-500 xl:hidden"
+        >
+          <Menu size={18} />
+        </button>
 
-      <div />
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-green-800">
+            EBBI s.r.o.
+          </h1>
+
+          <p className="text-sm text-zinc-500">
+            Virtuálna kancelária tímu
+          </p>
+        </div>
+      </div>
 
       {isLoggedIn && (
         <div className="relative">

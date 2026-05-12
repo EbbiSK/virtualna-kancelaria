@@ -59,30 +59,22 @@ export default function Sidebar({
         }`}
       >
         <div className="border-b border-zinc-100 p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-600 text-lg font-black text-white">
-                E
-              </div>
-
-              <div>
-                <h1 className="text-lg font-black text-zinc-900">
-                  Ebbi Office
-                </h1>
-
-                <p className="text-xs text-zinc-500">
-                  Workspace
-                </p>
-              </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-green-50 text-green-700">
+              <span className="text-4xl font-black">E</span>
             </div>
 
-            <button
-              onClick={() => setMobileOpen?.(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-zinc-500 hover:bg-zinc-100 xl:hidden"
-            >
-              <X size={18} />
-            </button>
+            <h1 className="text-xl font-black text-green-800">
+              EBBI s.r.o.
+            </h1>
           </div>
+
+          <button
+            onClick={() => setMobileOpen?.(false)}
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl text-zinc-500 hover:bg-zinc-100 xl:hidden"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         <nav className="flex-1 space-y-2 p-3">
