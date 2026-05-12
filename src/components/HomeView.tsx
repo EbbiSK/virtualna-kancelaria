@@ -23,19 +23,21 @@ export default function HomeView() {
   } = useUserSettings();
 
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const savedLogin = localStorage.getItem("ebbi-auth");
-
     setIsLoggedIn(savedLogin === "true");
   }, []);
 
   function handleLogin(email: string, password: string) {
-    if (!email || !password) return;
+    if (!email.trim() || !password.trim()) return;
+
+    const userName = email.split("@")[0];
 
     localStorage.setItem("ebbi-auth", "true");
+    localStorage.setItem("ebbi-user-email", email.trim());
+    localStorage.setItem("ebbi-user-name", userName);
 
     setIsLoggedIn(true);
   }
