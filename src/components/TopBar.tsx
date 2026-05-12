@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, LogOut, Menu, Settings, User } from "lucide-react";
+import { ChevronDown, Menu, User } from "lucide-react";
 
 import { useOffice } from "../context/OfficeContext";
 import { useUserSettings } from "../context/UserSettingsContext";
@@ -24,11 +24,6 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
   const activeUser = employees.find(
     (employee) => employee.id === activeUserId
   );
-
-  function handleLogout() {
-    localStorage.removeItem("ebbi-auth");
-    window.location.reload();
-  }
 
   return (
     <div className="flex items-center justify-between">
@@ -89,27 +84,6 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
               >
                 <User size={17} />
                 Profil
-              </button>
-
-              <button
-                onClick={() => {
-                  setUserMenuOpen(false);
-                  navigate("/settings");
-                }}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-zinc-700 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
-              >
-                <Settings size={17} />
-                Nastavenia
-              </button>
-
-              <div className="my-2 border-t border-zinc-100 dark:border-zinc-800" />
-
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-red-600 transition hover:bg-red-50 dark:hover:bg-red-900/20"
-              >
-                <LogOut size={17} />
-                Odhlásiť sa
               </button>
             </div>
           )}
