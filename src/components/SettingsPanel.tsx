@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2, Building2, Moon, Sun } from "lucide-react";
+import { Plus, Trash2, Building2 } from "lucide-react";
 
 import { useOffice } from "../context/OfficeContext";
 
@@ -11,15 +11,8 @@ type SettingsPanelProps = {
   setDarkMode?: (value: boolean) => void;
 };
 
-export default function SettingsPanel({
-  darkMode = false,
-  setDarkMode,
-}: SettingsPanelProps) {
-  const {
-    rooms,
-    addRoom,
-    deleteRoom,
-  } = useOffice();
+export default function SettingsPanel() {
+  const { rooms, addRoom, deleteRoom } = useOffice();
 
   const [newRoomName, setNewRoomName] = useState("");
 
@@ -29,75 +22,45 @@ export default function SettingsPanel({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-zinc-100 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-3xl font-black text-zinc-900 dark:text-white">
-          Nastavenia
+    <div className="pt-10">
+      <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-100 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="flex items-center gap-3 text-3xl font-black text-zinc-900 dark:text-white">
+          <Building2 size={28} className="text-green-700 dark:text-green-400" />
+          Miestnosti
         </h2>
 
-        <p className="mt-2 text-zinc-500 dark:text-zinc-400">
-          Správa miestností a vzhľadu aplikácie.
-        </p>
-      </div>
-
-      <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="text-xl font-black text-zinc-900 dark:text-white">
-          Vzhľad aplikácie
-        </h3>
-
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-          Prepni svetlý alebo tmavý režim.
-        </p>
-
-        <button
-          onClick={() => setDarkMode?.(!darkMode)}
-          className="mt-6 flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm font-bold text-zinc-700 transition hover:border-green-300 hover:bg-green-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
-        >
-          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-          {darkMode
-            ? "Prepnúť na svetlý režim"
-            : "Prepnúť na tmavý režim"}
-        </button>
-      </div>
-
-      <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="flex items-center gap-2 text-xl font-black text-zinc-900 dark:text-white">
-          <Building2 size={20} />
-          Miestnosti
-        </h3>
-
-        <div className="mt-5 flex gap-3">
+        <div className="mt-8 flex gap-4">
           <input
             value={newRoomName}
             onChange={(event) => setNewRoomName(event.target.value)}
             placeholder="Názov miestnosti"
-            className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm outline-none focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
+            className="flex-1 rounded-2xl border border-green-200 bg-white px-5 py-4 text-sm font-semibold text-zinc-900 outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
           />
 
           <button
             onClick={handleAddRoom}
-            className="flex items-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400"
+            className="flex items-center gap-2 rounded-2xl bg-zinc-900 px-7 py-4 text-sm font-black text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400"
           >
-            <Plus size={16} />
+            <Plus size={18} />
             Pridať
           </button>
         </div>
 
-        <div className="mt-5 space-y-2">
+        <div className="mt-8 space-y-4">
           {rooms.map((room) => (
             <div
               key={room.id}
-              className="flex items-center justify-between rounded-xl bg-zinc-50 px-4 py-3 dark:bg-zinc-950"
+              className="flex items-center justify-between rounded-2xl bg-zinc-50 px-6 py-5 dark:bg-zinc-950"
             >
-              <span className="font-bold text-zinc-900 dark:text-white">
+              <span className="text-lg font-black text-green-800 dark:text-green-400">
                 {room.name}
               </span>
 
               <button
                 onClick={() => deleteRoom(room.id)}
-                className="rounded-lg p-2 text-red-600 transition hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="rounded-xl p-2 text-red-600 transition hover:bg-red-50 dark:hover:bg-red-900/20"
               >
-                <Trash2 size={16} />
+                <Trash2 size={20} />
               </button>
             </div>
           ))}
