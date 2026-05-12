@@ -1,7 +1,6 @@
 import {
   Building2,
   Settings,
-  LogOut,
   X,
 } from "lucide-react";
 
@@ -46,11 +45,6 @@ export default function Sidebar({
   function handleNavigate(path: string) {
     navigate(path);
     setMobileOpen?.(false);
-  }
-
-  function handleLogout() {
-    localStorage.removeItem("ebbi-auth");
-    window.location.reload();
   }
 
   return (
@@ -122,7 +116,7 @@ export default function Sidebar({
 
         <div className="border-t border-zinc-100 p-3 dark:border-zinc-800">
           <div className="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800">
-            <div className="mb-4 flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-green-600 text-sm font-black text-white">
                   {avatar ? (
@@ -149,14 +143,6 @@ export default function Sidebar({
                 </div>
               </div>
             </div>
-
-            <button
-              onClick={handleLogout}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600 dark:bg-white dark:text-zinc-900 dark:hover:bg-red-500"
-            >
-              <LogOut size={16} />
-              Odhlásiť sa
-            </button>
           </div>
         </div>
       </aside>
