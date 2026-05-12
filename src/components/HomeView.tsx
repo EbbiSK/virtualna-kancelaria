@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
@@ -7,6 +7,7 @@ import RoomsGrid from "./RoomsGrid";
 import SettingsPanel from "./SettingsPanel";
 import EmployeeProfile from "./EmployeeProfile";
 import DirectMessage from "./DirectMessage";
+import LoginScreen from "./LoginScreen";
 
 import { useUserSettings } from "../context/UserSettingsContext";
 
@@ -23,12 +24,32 @@ export default function HomeView() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem("ebbi-auth");
+
+    setIsLoggedIn(savedLogin === "true");
+  }, []);
+
+  function handleLogin(email: string, password: string) {
+    if (!email || !password) return;
+
+    localStorage.setItem("ebbi-auth", "true");
+
+    setIsLoggedIn(true);
+  }
+
   function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
     setAvatarFromFile(file);
+  }
+
+  if (!isLoggedIn) {
+    return <LoginScreen onLogin={handleLogin} />;
   }
 
   return (

@@ -1,6 +1,7 @@
 import {
   Building2,
   Settings,
+  LogOut,
   X,
 } from "lucide-react";
 
@@ -34,7 +35,8 @@ export default function Sidebar({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { avatar, activeUserId, setActiveUserId } = useUserSettings();
+  const { avatar, activeUserId } = useUserSettings();
+
   const { employees } = useOffice();
 
   const activeUser = employees.find(
@@ -44,6 +46,11 @@ export default function Sidebar({
   function handleNavigate(path: string) {
     navigate(path);
     setMobileOpen?.(false);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("ebbi-auth");
+    window.location.reload();
   }
 
   return (
@@ -115,11 +122,7 @@ export default function Sidebar({
 
         <div className="border-t border-zinc-100 p-3 dark:border-zinc-800">
           <div className="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800">
-            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-zinc-400">
-              Aktívny používateľ
-            </p>
-
-            <div className="mb-3 flex items-center gap-3">
+            <div className="mb-4 flex items-center gap-3">
               <div className="relative">
                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-green-600 text-sm font-black text-white">
                   {avatar ? (
@@ -138,7 +141,7 @@ export default function Sidebar({
 
               <div>
                 <div className="text-sm font-bold text-zinc-900 dark:text-white">
-                  {activeUser?.name || "Jaroslav"}
+                  {activeUser?.name || "Používateľ"}
                 </div>
 
                 <div className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -147,19 +150,13 @@ export default function Sidebar({
               </div>
             </div>
 
-            <select
-              value={activeUserId}
-              onChange={(event) =>
-                setActiveUserId(Number(event.target.value))
-              }
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-semibold text-zinc-700 outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600 dark:bg-white dark:text-zinc-900 dark:hover:bg-red-500"
             >
-              {employees.map((employee) => (
-                <option key={employee.id} value={employee.id}>
-                  {employee.name}
-                </option>
-              ))}
-            </select>
+              <LogOut size={16} />
+              Odhlásiť sa
+            </button>
           </div>
         </div>
       </aside>
