@@ -13,9 +13,6 @@ type SettingsPanelProps = {
 };
 
 export default function SettingsPanel({
-  avatar,
-  onAvatarUpload,
-  onRemoveAvatar,
   darkMode = false,
   setDarkMode,
 }: SettingsPanelProps) {
@@ -54,71 +51,28 @@ export default function SettingsPanel({
         </h2>
 
         <p className="mt-2 text-zinc-500 dark:text-zinc-400">
-          Správa profilu, miestností, zamestnancov a vzhľadu aplikácie.
+          Správa miestností, zamestnancov a vzhľadu aplikácie.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h3 className="text-xl font-black text-zinc-900 dark:text-white">
-            Profil používateľa
-          </h3>
+      <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <h3 className="text-xl font-black text-zinc-900 dark:text-white">
+          Vzhľad aplikácie
+        </h3>
 
-          <div className="mt-6 flex items-center gap-5">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl bg-green-600 text-4xl font-black text-white">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt="Avatar"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                "J"
-              )}
-            </div>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          Prepni svetlý alebo tmavý režim.
+        </p>
 
-            <div className="space-y-3">
-              <label className="inline-flex cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400">
-                Nahrať avatar
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={onAvatarUpload}
-                  className="hidden"
-                />
-              </label>
-
-              {avatar && (
-                <button
-                  onClick={onRemoveAvatar}
-                  className="ml-3 rounded-xl border border-zinc-200 px-5 py-3 text-sm font-bold text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                >
-                  Odstrániť
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h3 className="text-xl font-black text-zinc-900 dark:text-white">
-            Vzhľad aplikácie
-          </h3>
-
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            Prepni svetlý alebo tmavý režim.
-          </p>
-
-          <button
-            onClick={() => setDarkMode?.(!darkMode)}
-            className="mt-6 flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm font-bold text-zinc-700 transition hover:border-green-300 hover:bg-green-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
-          >
-            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-            {darkMode
-              ? "Prepnúť na svetlý režim"
-              : "Prepnúť na tmavý režim"}
-          </button>
-        </div>
+        <button
+          onClick={() => setDarkMode?.(!darkMode)}
+          className="mt-6 flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm font-bold text-zinc-700 transition hover:border-green-300 hover:bg-green-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        >
+          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+          {darkMode
+            ? "Prepnúť na svetlý režim"
+            : "Prepnúť na tmavý režim"}
+        </button>
       </div>
 
       <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
