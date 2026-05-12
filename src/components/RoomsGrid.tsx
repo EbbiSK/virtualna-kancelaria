@@ -2,7 +2,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   DoorOpen,
   Video,
-  MessageSquare,
+ MessageSquare,
   ArrowLeft,
 } from "lucide-react";
 
@@ -174,11 +174,11 @@ export default function RoomsGrid() {
             </h3>
 
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              Otvoriť miestnosť
+              Vstúpiť ako prihlásený používateľ
             </p>
 
-            <div className="mt-6 rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-zinc-700 shadow-sm dark:bg-zinc-900 dark:text-zinc-300">
-              Vstúpiť
+            <div className="mt-6 rounded-2xl bg-green-600 px-5 py-3 text-center text-sm font-black text-white shadow-sm transition hover:bg-green-700">
+              Vstúpiť do miestnosti
             </div>
           </button>
         ))}
