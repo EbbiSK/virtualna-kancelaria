@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Send, Phone, Video } from "lucide-react";
 
 import { useOffice } from "../context/OfficeContext";
+import { useUserSettings } from "../context/UserSettingsContext";
 
 type DMMessage = {
   id: number;
+  fromUserId: number;
+  fromUserName: string;
   text: string;
-  own: boolean;
   time: string;
 };
 
@@ -17,18 +19,25 @@ export default function DirectMessage() {
   const { employeeId } = useParams();
 
   const { employees } = useOffice();
+  const { activeUserId } = useUserSettings();
 
-  const employee = employees.find(
+  const activeUser = employees.find(
+    (item) => item.id === activeUserId
+  );
+
+  const recipient = employees.find(
     (item) => item.id === Number(employeeId)
   );
 
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<DMMessage[]>([]);
 
-  const storageKey = `dm-${employeeId}`;
+  const firstUserId = Math.min(activeUserId, Number(employeeId));
+  const secondUserId = Math.max(activeUserId, Number(employeeId));
+  const storageKey = `dm-${firstUserId}-${secondUserId}`;
 
   useEffect(() => {
-    if (!employee) return;
+    if (!activeUser || !recipient) return;
 
     const savedMessages = localStorage.getItem(storageKey);
 
@@ -38,27 +47,31 @@ export default function DirectMessage() {
       setMessages([
         {
           id: 1,
-          text: `Ahoj, toto je súkromný chat s ${employee.name}.`,
-          own: false,
+          fromUserId: 0,
+          fromUserName: "System",
+          text: `Súkromná konverzácia: ${activeUser.name} ↔ ${recipient.name}`,
           time: "09:00",
         },
       ]);
     }
-  }, [employee, storageKey]);
+
+    setInputValue("");
+  }, [activeUser?.id, recipient?.id, storageKey]);
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(messages));
   }, [messages, storageKey]);
 
   function sendMessage() {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !activeUser || !recipient) return;
 
     const now = new Date();
 
     const newMessage: DMMessage = {
       id: Date.now(),
+      fromUserId: activeUser.id,
+      fromUserName: activeUser.name,
       text: inputValue,
-      own: true,
       time: now.toLocaleTimeString("sk-SK", {
         hour: "2-digit",
         minute: "2-digit",
@@ -69,22 +82,24 @@ export default function DirectMessage() {
     setInputValue("");
   }
 
-  if (!employee) {
+  if (!activeUser || !recipient) {
     return (
       <div className="rounded-2xl border border-zinc-100 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
         <h2 className="text-2xl font-black text-zinc-900 dark:text-white">
-          Zamestnanec nenájdený
+          Konverzácia nenájdená
         </h2>
       </div>
     );
   }
+
+  const isSelfChat = activeUser.id === recipient.id;
 
   return (
     <div className="overflow-hidden rounded-3xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex flex-col gap-4 border-b border-zinc-100 px-6 py-5 dark:border-zinc-800 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate(`/employee/${employee.id}`)}
+            onClick={() => navigate(`/employee/${recipient.id}`)}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 transition hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
           >
             <ArrowLeft size={18} />
@@ -92,16 +107,19 @@ export default function DirectMessage() {
 
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 text-lg font-black text-white">
-              {employee.name.charAt(0)}
+              {recipient.name.charAt(0)}
             </div>
 
             <div>
               <h2 className="text-lg font-black text-zinc-900 dark:text-white">
-                {employee.name}
+                {recipient.name}
               </h2>
 
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                {employee.role}
+                Píšeš ako{" "}
+                <span className="font-bold text-green-700 dark:text-green-400">
+                  {activeUser.name}
+                </span>
               </p>
             </div>
           </div>
@@ -118,35 +136,55 @@ export default function DirectMessage() {
         </div>
       </div>
 
+      {isSelfChat && (
+        <div className="border-b border-yellow-100 bg-yellow-50 px-6 py-3 text-sm font-semibold text-yellow-800 dark:border-yellow-900/30 dark:bg-yellow-900/20 dark:text-yellow-300">
+          Máš otvorený chat sám so sebou. Prepni aktívneho používateľa v sidebare,
+          ak chceš testovať správu medzi dvomi rôznymi osobami.
+        </div>
+      )}
+
       <div className="max-h-[540px] min-h-[420px] space-y-4 overflow-y-auto bg-zinc-50 p-6 dark:bg-zinc-950">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${
-              message.own ? "justify-end" : "justify-start"
-            }`}
-          >
+        {messages.map((message) => {
+          const isOwn = message.fromUserId === activeUser.id;
+
+          return (
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                message.own
-                  ? "bg-green-600 text-white"
-                  : "bg-white text-zinc-900 shadow-sm dark:bg-zinc-900 dark:text-white"
+              key={message.id}
+              className={`flex ${
+                isOwn ? "justify-end" : "justify-start"
               }`}
             >
-              <p className="text-sm leading-relaxed">{message.text}</p>
-
-              <p
-                className={`mt-2 text-right text-xs ${
-                  message.own
-                    ? "text-green-100"
-                    : "text-zinc-400"
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  isOwn
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-zinc-900 shadow-sm dark:bg-zinc-900 dark:text-white"
                 }`}
               >
-                {message.time}
-              </p>
+                <div
+                  className={`mb-1 text-xs font-bold ${
+                    isOwn ? "text-green-100" : "text-zinc-500"
+                  }`}
+                >
+                  {message.fromUserName}
+                  {isOwn ? " · ty" : ""}
+                </div>
+
+                <p className="text-sm leading-relaxed">
+                  {message.text}
+                </p>
+
+                <p
+                  className={`mt-2 text-right text-xs ${
+                    isOwn ? "text-green-100" : "text-zinc-400"
+                  }`}
+                >
+                  {message.time}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
@@ -160,7 +198,7 @@ export default function DirectMessage() {
                 sendMessage();
               }
             }}
-            placeholder={`Napíš správu pre ${employee.name}...`}
+            placeholder={`Napíš správu pre ${recipient.name}...`}
             className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
           />
 

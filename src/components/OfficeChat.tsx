@@ -3,13 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Hash, Send, Trash2 } from "lucide-react";
 
 import { useOffice, type Room } from "../context/OfficeContext";
+import { useUserSettings } from "../context/UserSettingsContext";
 
 type Message = {
   id: number;
+  userId: number | null;
   user: string;
   message: string;
   time: string;
-  own: boolean;
 };
 
 function createSlug(name: string) {
@@ -22,25 +23,15 @@ function createSlug(name: string) {
 }
 
 function getDefaultMessages(room?: Room): Message[] {
-  if (!room) {
-    return [
-      {
-        id: 1,
-        user: "System",
-        message: "Vitaj vo firemnom chate.",
-        time: "09:00",
-        own: false,
-      },
-    ];
-  }
-
   return [
     {
       id: 1,
+      userId: null,
       user: "System",
-      message: `Vitaj v kanáli #${room.name}.`,
+      message: room
+        ? `Vitaj v kanáli #${room.name}.`
+        : "Vitaj vo firemnom chate.",
       time: "09:00",
-      own: false,
     },
   ];
 }
@@ -49,7 +40,10 @@ export default function OfficeChat() {
   const navigate = useNavigate();
   const { roomSlug } = useParams();
 
-  const { rooms } = useOffice();
+  const { rooms, employees } = useOffice();
+  const { activeUserId } = useUserSettings();
+
+  const activeUser = employees.find((employee) => employee.id === activeUserId);
 
   const selectedRoom =
     rooms.find((room) => createSlug(room.name) === roomSlug) || null;
@@ -78,19 +72,19 @@ export default function OfficeChat() {
   }, [messages, storageKey]);
 
   function sendMessage() {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !activeUser) return;
 
     const now = new Date();
 
     const newMessage: Message = {
       id: Date.now(),
-      user: "Ty",
+      userId: activeUser.id,
+      user: activeUser.name,
       message: inputValue,
       time: now.toLocaleTimeString("sk-SK", {
         hour: "2-digit",
         minute: "2-digit",
       }),
-      own: true,
     };
 
     setMessages([...messages, newMessage]);
@@ -155,9 +149,10 @@ export default function OfficeChat() {
             </h2>
 
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {selectedRoom
-                ? "Samostatný chat tejto miestnosti"
-                : "Všeobecný firemný chat"}
+              Píšeš ako:{" "}
+              <span className="font-bold text-green-700 dark:text-green-400">
+                {activeUser?.name || "Neznámy používateľ"}
+              </span>
             </p>
           </div>
 
@@ -171,38 +166,48 @@ export default function OfficeChat() {
         </div>
 
         <div className="max-h-[520px] min-h-[360px] space-y-1 overflow-y-auto p-4">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className="rounded-xl px-3 py-3 transition hover:bg-zinc-50 dark:hover:bg-zinc-800"
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
-                    msg.own
-                      ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                  }`}
-                >
-                  {msg.user.charAt(0)}
-                </div>
+          {messages.map((msg) => {
+            const isOwn = msg.userId === activeUserId;
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                      {msg.user}
-                    </span>
-
-                    <span className="text-xs text-zinc-400">{msg.time}</span>
+            return (
+              <div
+                key={msg.id}
+                className="rounded-xl px-3 py-3 transition hover:bg-zinc-50 dark:hover:bg-zinc-800"
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
+                      isOwn
+                        ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                        : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                    }`}
+                  >
+                    {msg.user.charAt(0)}
                   </div>
 
-                  <p className="mt-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                    {msg.message}
-                  </p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                        {msg.user}
+                      </span>
+
+                      {isOwn && (
+                        <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-bold text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                          ty
+                        </span>
+                      )}
+
+                      <span className="text-xs text-zinc-400">{msg.time}</span>
+                    </div>
+
+                    <p className="mt-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                      {msg.message}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">

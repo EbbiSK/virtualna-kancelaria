@@ -12,6 +12,8 @@ type UserSettingsContextType = {
   avatar: string;
   setAvatarFromFile: (file: File) => void;
   removeAvatar: () => void;
+  activeUserId: number;
+  setActiveUserId: (id: number) => void;
 };
 
 const UserSettingsContext = createContext<UserSettingsContextType | null>(null);
@@ -26,9 +28,18 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem("userAvatar") || "";
   });
 
+  const [activeUserId, setActiveUserIdState] = useState(() => {
+    const savedUserId = localStorage.getItem("activeUserId");
+    return savedUserId ? Number(savedUserId) : 1;
+  });
+
   useEffect(() => {
     localStorage.setItem("darkMode", String(darkMode));
   }, [darkMode]);
+
+  useEffect(() => {
+    localStorage.setItem("activeUserId", String(activeUserId));
+  }, [activeUserId]);
 
   function setAvatarFromFile(file: File) {
     const reader = new FileReader();
@@ -48,6 +59,10 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("userAvatar");
   }
 
+  function setActiveUserId(id: number) {
+    setActiveUserIdState(id);
+  }
+
   return (
     <UserSettingsContext.Provider
       value={{
@@ -56,6 +71,8 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
         avatar,
         setAvatarFromFile,
         removeAvatar,
+        activeUserId,
+        setActiveUserId,
       }}
     >
       {children}

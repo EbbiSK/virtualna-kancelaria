@@ -9,6 +9,7 @@ import OfficeChat from "./OfficeChat";
 import SettingsPanel from "./SettingsPanel";
 import EmployeeProfile from "./EmployeeProfile";
 import DirectMessage from "./DirectMessage";
+import DMInbox from "./DMInbox";
 
 import { useOffice } from "../context/OfficeContext";
 import { useUserSettings } from "../context/UserSettingsContext";
@@ -40,10 +41,7 @@ export default function HomeView() {
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
-        <Sidebar
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
-        />
+        <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
         <main className="min-w-0 flex-1 px-4 py-6 md:px-6 md:py-8">
           <div className="mx-auto max-w-5xl space-y-6">
@@ -105,19 +103,19 @@ export default function HomeView() {
                   </button>
 
                   <button
-                    onClick={() => navigate("/settings")}
+                    onClick={() => navigate("/messages")}
                     className="rounded-2xl border border-zinc-100 bg-zinc-50 p-6 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
                   >
                     <div className="text-3xl font-black text-green-700 dark:text-green-400">
-                      {employees.length}
+                      DM
                     </div>
 
                     <div className="mt-2 font-bold text-zinc-900 dark:text-white">
-                      Zamestnanci
+                      Správy
                     </div>
 
                     <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                      Spravuj tím a miestnosti
+                      Priame správy tímu
                     </p>
                   </button>
                 </div>
@@ -132,6 +130,8 @@ export default function HomeView() {
 
             {location.pathname.startsWith("/chat/") && <OfficeChat />}
 
+            {location.pathname === "/messages" && <DMInbox />}
+
             {location.pathname === "/calendar" && <UpcomingMeetings />}
 
             {location.pathname === "/settings" && (
@@ -145,9 +145,7 @@ export default function HomeView() {
             )}
 
             {location.pathname.startsWith("/employee/") &&
-              !location.pathname.endsWith("/chat") && (
-                <EmployeeProfile />
-              )}
+              !location.pathname.endsWith("/chat") && <EmployeeProfile />}
 
             {location.pathname.endsWith("/chat") && <DirectMessage />}
 

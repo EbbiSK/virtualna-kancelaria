@@ -16,6 +16,8 @@ export default function App() {
       <Route path="/chat" element={<HomeView />} />
       <Route path="/chat/:roomSlug" element={<HomeView />} />
 
+      <Route path="/messages" element={<HomeView />} />
+
       <Route path="/calendar" element={<HomeView />} />
 
       <Route path="/settings" element={<HomeView />} />
