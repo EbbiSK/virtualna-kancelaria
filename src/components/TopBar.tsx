@@ -18,10 +18,10 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const isLoggedIn = localStorage.getItem("ebbi-auth") === "true";
-  const userEmail = localStorage.getItem("ebbi-user-email") || "pouzivatel@ebbi.sk";
+  const userEmail =
+    localStorage.getItem("ebbi-user-email") || "pouzivatel@ebbi.sk";
 
   const savedProfile = localStorage.getItem("employee-profile-1");
-
   const profile = savedProfile ? JSON.parse(savedProfile) : null;
 
   const firstName = profile?.firstName || "Jaro";
