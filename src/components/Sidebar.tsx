@@ -1,8 +1,5 @@
 import {
-  LayoutDashboard,
   Building2,
-  MessageSquare,
-  CalendarDays,
   Settings,
   X,
 } from "lucide-react";
@@ -19,24 +16,9 @@ type SidebarProps = {
 
 const menu = [
   {
-    name: "Dashboard",
-    path: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
     name: "Miestnosti",
     path: "/rooms",
     icon: Building2,
-  },
-  {
-    name: "Chat",
-    path: "/chat",
-    icon: MessageSquare,
-  },
-  {
-    name: "Kalendár",
-    path: "/calendar",
-    icon: CalendarDays,
   },
   {
     name: "Nastavenia",
@@ -55,7 +37,9 @@ export default function Sidebar({
   const { avatar, activeUserId, setActiveUserId } = useUserSettings();
   const { employees } = useOffice();
 
-  const activeUser = employees.find((employee) => employee.id === activeUserId);
+  const activeUser = employees.find(
+    (employee) => employee.id === activeUserId
+  );
 
   function handleNavigate(path: string) {
     navigate(path);
@@ -103,9 +87,12 @@ export default function Sidebar({
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="flex-1 space-y-2 p-3">
           {menu.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive =
+              location.pathname === item.path ||
+              location.pathname.startsWith(`${item.path}/`);
+
             const Icon = item.icon;
 
             return (
@@ -119,6 +106,7 @@ export default function Sidebar({
                 }`}
               >
                 <Icon size={18} />
+
                 <span>{item.name}</span>
               </button>
             );
@@ -161,7 +149,9 @@ export default function Sidebar({
 
             <select
               value={activeUserId}
-              onChange={(event) => setActiveUserId(Number(event.target.value))}
+              onChange={(event) =>
+                setActiveUserId(Number(event.target.value))
+              }
               className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-semibold text-zinc-700 outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
             >
               {employees.map((employee) => (

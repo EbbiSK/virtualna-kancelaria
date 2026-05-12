@@ -25,17 +25,24 @@ export default function DMInbox() {
   const { employees } = useOffice();
   const { activeUserId } = useUserSettings();
 
-  const activeUser = employees.find((employee) => employee.id === activeUserId);
+  const activeUser = employees.find(
+    (employee) => employee.id === activeUserId
+  );
 
   const conversations = employees
     .filter((employee) => employee.id !== activeUserId)
     .map((employee) => {
       const storageKey = getStorageKey(activeUserId, employee.id);
+
       const savedMessages = localStorage.getItem(storageKey);
 
-      const messages: DMMessage[] = savedMessages
-        ? JSON.parse(savedMessages)
-        : [];
+      let messages: DMMessage[] = [];
+
+      try {
+        messages = savedMessages ? JSON.parse(savedMessages) : [];
+      } catch {
+        messages = [];
+      }
 
       const lastMessage = messages[messages.length - 1];
 
