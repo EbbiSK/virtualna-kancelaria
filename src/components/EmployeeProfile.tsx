@@ -1,13 +1,19 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Building2, Mail, User, Video } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  User,
+} from "lucide-react";
 
 import { useOffice } from "../context/OfficeContext";
 
 export default function EmployeeProfile() {
   const navigate = useNavigate();
+
   const { employeeId } = useParams();
 
-  const { employees, rooms } = useOffice();
+  const { employees } = useOffice();
 
   const employee = employees.find(
     (item) => item.id === Number(employeeId)
@@ -15,28 +21,19 @@ export default function EmployeeProfile() {
 
   if (!employee) {
     return (
-      <div className="rounded-2xl border border-zinc-100 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-3xl border border-zinc-100 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
         <h2 className="text-2xl font-black text-zinc-900 dark:text-white">
-          Zamestnanec nenájdený
+          Používateľ neexistuje
         </h2>
-
-        <button
-          onClick={() => navigate("/settings")}
-          className="mt-6 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400"
-        >
-          Späť do nastavení
-        </button>
       </div>
     );
   }
 
-  const room = rooms.find((item) => item.id === employee.roomId);
-
   return (
     <div className="space-y-6">
       <button
-        onClick={() => navigate("/settings")}
-        className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-zinc-700 shadow-sm transition hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 rounded-2xl border border-zinc-100 bg-white px-4 py-3 text-sm font-bold text-zinc-700 shadow-sm transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
       >
         <ArrowLeft size={16} />
         Späť
@@ -44,102 +41,93 @@ export default function EmployeeProfile() {
 
       <div className="rounded-3xl border border-zinc-100 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex flex-col gap-6 md:flex-row md:items-center">
-          <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-green-600 text-4xl font-black text-white">
+          <div className="flex h-32 w-32 items-center justify-center rounded-3xl bg-green-600 text-5xl font-black text-white">
             {employee.name.charAt(0)}
           </div>
 
           <div>
-            <h1 className="text-4xl font-black text-zinc-900 dark:text-white">
+            <h1 className="text-5xl font-black tracking-tight text-zinc-900 dark:text-white">
               {employee.name}
             </h1>
 
-            <p className="mt-2 text-lg text-zinc-500 dark:text-zinc-400">
-              {employee.role}
+            <p className="mt-3 text-lg text-zinc-500 dark:text-zinc-400">
+              Profil používateľa
             </p>
-
-            <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-green-50 px-4 py-2 text-sm font-bold text-green-700 dark:bg-green-900/30 dark:text-green-400">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-              Online
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <User className="text-green-700 dark:text-green-400" size={22} />
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <User size={22} />
+            </div>
 
-          <h3 className="mt-4 font-black text-zinc-900 dark:text-white">
-            Pozícia
-          </h3>
+            <div>
+              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                Krstné meno
+              </p>
 
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {employee.role}
-          </p>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                {employee.name}
+              </h3>
+            </div>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <Building2 className="text-green-700 dark:text-green-400" size={22} />
+        <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <User size={22} />
+            </div>
 
-          <h3 className="mt-4 font-black text-zinc-900 dark:text-white">
-            Miestnosť
-          </h3>
+            <div>
+              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                Priezvisko
+              </p>
 
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {room ? room.name : "Bez miestnosti"}
-          </p>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                Placeholder
+              </h3>
+            </div>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <Mail className="text-green-700 dark:text-green-400" size={22} />
+        <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <Mail size={22} />
+            </div>
 
-          <h3 className="mt-4 font-black text-zinc-900 dark:text-white">
-            Kontakt
-          </h3>
+            <div>
+              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                Email
+              </p>
 
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {employee.name.toLowerCase()}@ebbi.sk
-          </p>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                {employee.email}
+              </h3>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-xl font-black text-zinc-900 dark:text-white">
-          Rýchle akcie
-        </h2>
+        <div className="rounded-3xl border border-zinc-100 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <Phone size={22} />
+            </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
-          <button
-            onClick={() => navigate("/chat")}
-            className="rounded-xl border border-zinc-100 bg-zinc-50 p-5 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
-          >
-            <Mail className="text-green-700 dark:text-green-400" size={20} />
+            <div>
+              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                Telefónne číslo
+              </p>
 
-            <p className="mt-3 font-bold text-zinc-900 dark:text-white">
-              Poslať správu
-            </p>
-
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              Otvor firemný chat
-            </p>
-          </button>
-
-          <button
-            onClick={() =>
-              room ? navigate(`/rooms/${room.name.toLowerCase()}/meeting`) : navigate("/rooms")
-            }
-            className="rounded-xl border border-zinc-100 bg-zinc-50 p-5 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
-          >
-            <Video className="text-green-700 dark:text-green-400" size={20} />
-
-            <p className="mt-3 font-bold text-zinc-900 dark:text-white">
-              Spustiť meeting
-            </p>
-
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              Otvor miestnosť zamestnanca
-            </p>
-          </button>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                +421 900 000 000
+              </h3>
+            </div>
+          </div>
         </div>
       </div>
     </div>
