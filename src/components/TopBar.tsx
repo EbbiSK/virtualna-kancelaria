@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, CheckCircle2 } from "lucide-react";
 
 type TopBarProps = {
   darkMode: boolean;
@@ -9,6 +9,8 @@ type TopBarProps = {
 export default function TopBar({
   setMobileOpen,
 }: TopBarProps) {
+  const isLoggedIn = localStorage.getItem("ebbi-auth") === "true";
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -30,9 +32,16 @@ export default function TopBar({
         </div>
       </div>
 
-      <button className="rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700">
-        Prihlásiť sa
-      </button>
+      {isLoggedIn ? (
+        <div className="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-sm font-bold text-green-700 dark:bg-green-900/30 dark:text-green-400">
+          <CheckCircle2 size={18} />
+          Prihlásený
+        </div>
+      ) : (
+        <button className="rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700">
+          Prihlásiť sa
+        </button>
+      )}
     </div>
   );
 }
