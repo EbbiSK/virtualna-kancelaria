@@ -11,12 +11,17 @@ export default function App() {
 
       <Route path="/rooms" element={<HomeView />} />
       <Route path="/rooms/:roomSlug" element={<HomeView />} />
+      <Route path="/rooms/:roomSlug/meeting" element={<HomeView />} />
 
       <Route path="/chat" element={<HomeView />} />
+      <Route path="/chat/:roomSlug" element={<HomeView />} />
 
       <Route path="/calendar" element={<HomeView />} />
 
       <Route path="/settings" element={<HomeView />} />
+
+      <Route path="/employee/:employeeId" element={<HomeView />} />
+      <Route path="/employee/:employeeId/chat" element={<HomeView />} />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, UserPlus, Building2, Moon, Sun } from "lucide-react";
 
 import { useOffice } from "../context/OfficeContext";
@@ -18,6 +19,8 @@ export default function SettingsPanel({
   darkMode = false,
   setDarkMode,
 }: SettingsPanelProps) {
+  const navigate = useNavigate();
+
   const {
     rooms,
     employees,
@@ -111,7 +114,9 @@ export default function SettingsPanel({
             className="mt-6 flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm font-bold text-zinc-700 transition hover:border-green-300 hover:bg-green-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-            {darkMode ? "Prepnúť na svetlý režim" : "Prepnúť na tmavý režim"}
+            {darkMode
+              ? "Prepnúť na svetlý režim"
+              : "Prepnúť na tmavý režim"}
           </button>
         </div>
       </div>
@@ -194,7 +199,8 @@ export default function SettingsPanel({
           {employees.map((employee) => (
             <div
               key={employee.id}
-              className="grid grid-cols-1 gap-3 rounded-xl bg-zinc-50 p-4 dark:bg-zinc-950 md:grid-cols-[1fr_220px_auto]"
+              className="grid cursor-pointer grid-cols-1 gap-3 rounded-xl bg-zinc-50 p-4 transition hover:bg-zinc-100 dark:bg-zinc-950 dark:hover:bg-zinc-900 md:grid-cols-[1fr_220px_auto]"
+              onClick={() => navigate(`/employee/${employee.id}`)}
             >
               <div>
                 <p className="font-bold text-zinc-900 dark:text-white">
@@ -208,6 +214,7 @@ export default function SettingsPanel({
 
               <select
                 value={employee.roomId}
+                onClick={(event) => event.stopPropagation()}
                 onChange={(event) =>
                   changeEmployeeRoom(employee.id, event.target.value)
                 }
@@ -223,7 +230,10 @@ export default function SettingsPanel({
               </select>
 
               <button
-                onClick={() => deleteEmployee(employee.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  deleteEmployee(employee.id);
+                }}
                 className="rounded-xl px-4 py-3 text-red-600 transition hover:bg-red-50 dark:hover:bg-red-900/20"
               >
                 <Trash2 size={17} />

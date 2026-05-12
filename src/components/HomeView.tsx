@@ -7,6 +7,8 @@ import RoomsGrid from "./RoomsGrid";
 import UpcomingMeetings from "./UpcomingMeetings";
 import OfficeChat from "./OfficeChat";
 import SettingsPanel from "./SettingsPanel";
+import EmployeeProfile from "./EmployeeProfile";
+import DirectMessage from "./DirectMessage";
 
 import { useOffice } from "../context/OfficeContext";
 import { useUserSettings } from "../context/UserSettingsContext";
@@ -128,6 +130,8 @@ export default function HomeView() {
 
             {location.pathname === "/chat" && <OfficeChat />}
 
+            {location.pathname.startsWith("/chat/") && <OfficeChat />}
+
             {location.pathname === "/calendar" && <UpcomingMeetings />}
 
             {location.pathname === "/settings" && (
@@ -139,6 +143,13 @@ export default function HomeView() {
                 setDarkMode={setDarkMode}
               />
             )}
+
+            {location.pathname.startsWith("/employee/") &&
+              !location.pathname.endsWith("/chat") && (
+                <EmployeeProfile />
+              )}
+
+            {location.pathname.endsWith("/chat") && <DirectMessage />}
 
             <div className="pt-6 text-center text-xs font-semibold text-zinc-400">
               Developed by Ebbi

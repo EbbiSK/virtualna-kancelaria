@@ -61,10 +61,11 @@ export default function RoomsGrid() {
 
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<RoomMessage[]>([]);
-  const [meetingOpen, setMeetingOpen] = useState(false);
   const [fullscreenMeeting, setFullscreenMeeting] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
+
+  const isMeetingRoute = location.pathname === `/rooms/${roomSlug}/meeting`;
 
   useEffect(() => {
     if (!selectedRoom) return;
@@ -80,8 +81,6 @@ export default function RoomsGrid() {
     }
 
     setInputValue("");
-    setMeetingOpen(false);
-    setFullscreenMeeting(false);
   }, [selectedRoom?.id]);
 
   useEffect(() => {
@@ -119,188 +118,240 @@ export default function RoomsGrid() {
     setMessages(getDefaultMessages(selectedRoom));
   }
 
-  if (selectedRoom) {
+  if (selectedRoom && isMeetingRoute) {
     return (
-      <>
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 md:p-6">
-            <button
-              onClick={() => navigate("/rooms")}
-              className="mb-6 flex items-center gap-2 rounded-xl bg-zinc-50 px-4 py-2 text-sm font-bold text-zinc-700 transition hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-            >
-              <ArrowLeft size={16} />
-              Späť na miestnosti
-            </button>
+      <div className="fixed inset-0 z-[100] bg-zinc-950 text-white">
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
+            <div>
+              <h3 className="text-lg font-black">
+                Meeting: {selectedRoom.name}
+              </h3>
 
-            <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-              <div>
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                  <DoorOpen size={26} />
-                </div>
-
-                <h2 className="mt-5 text-3xl font-black text-zinc-900 dark:text-white">
-                  {selectedRoom.name}
-                </h2>
-
-                <p className="mt-2 max-w-2xl text-zinc-500 dark:text-zinc-400">
-                  Dynamická miestnosť vytvorená v nastaveniach.
-                </p>
-
-                <p className="mt-3 text-sm font-semibold text-green-700 dark:text-green-400">
-                  URL: /rooms/{createSlug(selectedRoom.name)}
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
-                <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
-                  Stav miestnosti
-                </p>
-
-                <p className="mt-1 text-lg font-black text-green-700 dark:text-green-400">
-                  Aktívna
-                </p>
-              </div>
+              <p className="text-sm text-zinc-400">
+                {roomEmployees.length} účastníkov
+              </p>
             </div>
 
-            <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
-                <Users className="text-green-700 dark:text-green-400" size={22} />
-
-                <p className="mt-4 text-2xl font-black text-zinc-900 dark:text-white">
-                  {roomEmployees.length}
-                </p>
-
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  zamestnancov v miestnosti
-                </p>
-              </div>
-
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setMeetingOpen(true)}
-                className="rounded-2xl border border-zinc-100 bg-zinc-50 p-5 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
+                onClick={() => setFullscreenMeeting(!fullscreenMeeting)}
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-zinc-300 transition hover:bg-zinc-800"
               >
-                <Video className="text-green-700 dark:text-green-400" size={22} />
-
-                <p className="mt-4 font-black text-zinc-900 dark:text-white">
-                  Spustiť meeting
-                </p>
-
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                  Meeting pre {selectedRoom.name}
-                </p>
+                {fullscreenMeeting ? (
+                  <Minimize2 size={18} />
+                ) : (
+                  <Maximize2 size={18} />
+                )}
               </button>
 
-              <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
-                <MessageSquare
-                  className="text-green-700 dark:text-green-400"
-                  size={22}
-                />
-
-                <p className="mt-4 font-black text-zinc-900 dark:text-white">
-                  Room Chat
-                </p>
-
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                  Samostatný chat miestnosti
-                </p>
-              </div>
+              <button
+                onClick={() =>
+                  navigate(`/rooms/${createSlug(selectedRoom.name)}`)
+                }
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-zinc-300 transition hover:bg-zinc-800"
+              >
+                <X size={18} />
+              </button>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-              <div>
-                <h3 className="text-lg font-black text-zinc-900 dark:text-white">
-                  Chat miestnosti
-                </h3>
-
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  {selectedRoom.name}
-                </p>
-              </div>
-
-              <button
-                onClick={clearRoomChat}
-                className="rounded-xl bg-zinc-50 px-3 py-2 text-sm font-bold text-zinc-600 transition hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-              >
-                Vymazať
-              </button>
-            </div>
-
-            <div className="max-h-80 space-y-1 overflow-y-auto p-4">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className="rounded-xl px-3 py-3 transition hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-50 text-sm font-black text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                      {msg.user.charAt(0)}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                          {msg.user}
-                        </span>
-
-                        <span className="text-xs text-zinc-400">
-                          {msg.time}
-                        </span>
-                      </div>
-
-                      <p className="mt-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                        {msg.message}
-                      </p>
-                    </div>
+          <div className="grid flex-1 gap-4 p-4 md:grid-cols-3">
+            <div className="relative flex min-h-[400px] items-center justify-center rounded-2xl bg-zinc-900 md:col-span-2">
+              {cameraOn ? (
+                <div className="text-center">
+                  <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-600 text-3xl font-black">
+                    J
                   </div>
+
+                  <p className="mt-4 text-sm font-bold">Ty</p>
+
+                  <p className="mt-1 text-xs text-green-400">
+                    Kamera zapnutá
+                  </p>
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div className="text-center">
+                  <CameraOff className="mx-auto text-zinc-500" size={42} />
 
-            <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(event) => setInputValue(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      sendRoomMessage();
-                    }
-                  }}
-                  placeholder={`Napíš správu do ${selectedRoom.name}...`}
-                  className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
-                />
-
-                <button
-                  onClick={sendRoomMessage}
-                  className="flex items-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400"
-                >
-                  <Send size={16} />
-                  Odoslať
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <h3 className="font-black text-zinc-900 dark:text-white">
-              Zamestnanci v miestnosti
-            </h3>
-
-            <div className="mt-4 space-y-2">
-              {roomEmployees.length === 0 && (
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  V tejto miestnosti zatiaľ nie sú priradení zamestnanci.
-                </p>
+                  <p className="mt-4 text-sm font-bold text-zinc-300">
+                    Kamera vypnutá
+                  </p>
+                </div>
               )}
 
-              {roomEmployees.map((employee) => (
-                <div
+              {!micOn && (
+                <div className="absolute right-4 top-4 rounded-xl bg-red-600 px-3 py-2 text-xs font-bold">
+                  Mic off
+                </div>
+              )}
+            </div>
+
+            <div className="grid gap-4">
+              {roomEmployees.slice(0, 4).map((employee) => (
+                <button
                   key={employee.id}
-                  className="rounded-xl bg-zinc-50 px-4 py-3 dark:bg-zinc-950"
+                  onClick={() => navigate(`/employee/${employee.id}`)}
+                  className="flex min-h-[140px] items-center justify-center rounded-2xl bg-zinc-900 transition hover:bg-zinc-800"
                 >
+                  <div className="text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-lg font-black">
+                      {employee.name.charAt(0)}
+                    </div>
+
+                    <p className="mt-3 text-xs font-bold">{employee.name}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 border-t border-zinc-800 px-5 py-4">
+            <button
+              onClick={() => setMicOn(!micOn)}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
+                micOn
+                  ? "bg-zinc-800 hover:bg-zinc-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }`}
+            >
+              {micOn ? <Mic size={19} /> : <MicOff size={19} />}
+            </button>
+
+            <button
+              onClick={() => setCameraOn(!cameraOn)}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
+                cameraOn
+                  ? "bg-zinc-800 hover:bg-zinc-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }`}
+            >
+              {cameraOn ? <Camera size={19} /> : <CameraOff size={19} />}
+            </button>
+
+            <button
+              onClick={() => navigate(`/rooms/${createSlug(selectedRoom.name)}`)}
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600 transition hover:bg-red-700"
+            >
+              <PhoneOff size={19} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (selectedRoom) {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 md:p-6">
+          <button
+            onClick={() => navigate("/rooms")}
+            className="mb-6 flex items-center gap-2 rounded-xl bg-zinc-50 px-4 py-2 text-sm font-bold text-zinc-700 transition hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          >
+            <ArrowLeft size={16} />
+            Späť na miestnosti
+          </button>
+
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div>
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                <DoorOpen size={26} />
+              </div>
+
+              <h2 className="mt-5 text-3xl font-black text-zinc-900 dark:text-white">
+                {selectedRoom.name}
+              </h2>
+
+              <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+                Virtuálna miestnosť tímu
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
+              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                Zamestnanci
+              </p>
+
+              <p className="mt-1 text-lg font-black text-green-700 dark:text-green-400">
+                {roomEmployees.length}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+            <button
+              onClick={() =>
+                navigate(`/rooms/${createSlug(selectedRoom.name)}/meeting`)
+              }
+              className="rounded-2xl border border-zinc-100 bg-zinc-50 p-5 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
+            >
+              <Video className="text-green-700 dark:text-green-400" size={22} />
+
+              <p className="mt-4 font-black text-zinc-900 dark:text-white">
+                Spustiť meeting
+              </p>
+
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Otvor fullscreen meeting
+              </p>
+            </button>
+
+            <button
+              onClick={() => navigate(`/chat/${createSlug(selectedRoom.name)}`)}
+              className="rounded-2xl border border-zinc-100 bg-zinc-50 p-5 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
+            >
+              <MessageSquare
+                className="text-green-700 dark:text-green-400"
+                size={22}
+              />
+
+              <p className="mt-4 font-black text-zinc-900 dark:text-white">
+                Room Chat
+              </p>
+
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Samostatný chat miestnosti
+              </p>
+            </button>
+
+            <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
+              <Users className="text-green-700 dark:text-green-400" size={22} />
+
+              <p className="mt-4 font-black text-zinc-900 dark:text-white">
+                {roomEmployees.length} členov
+              </p>
+
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Aktívni v miestnosti
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <h3 className="font-black text-zinc-900 dark:text-white">
+            Zamestnanci v miestnosti
+          </h3>
+
+          <div className="mt-4 space-y-2">
+            {roomEmployees.length === 0 && (
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                V tejto miestnosti zatiaľ nie sú priradení zamestnanci.
+              </p>
+            )}
+
+            {roomEmployees.map((employee) => (
+              <button
+                key={employee.id}
+                onClick={() => navigate(`/employee/${employee.id}`)}
+                className="flex w-full items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3 text-left transition hover:bg-zinc-100 dark:bg-zinc-950 dark:hover:bg-zinc-800"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-sm font-black text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                  {employee.name.charAt(0)}
+                </div>
+
+                <div>
                   <p className="font-bold text-zinc-900 dark:text-white">
                     {employee.name}
                   </p>
@@ -309,159 +360,86 @@ export default function RoomsGrid() {
                     {employee.role}
                   </p>
                 </div>
-              ))}
-            </div>
+              </button>
+            ))}
           </div>
         </div>
 
-        {meetingOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4">
-            <div
-              className={`overflow-hidden border border-zinc-800 bg-zinc-950 text-white shadow-2xl transition-all ${
-                fullscreenMeeting
-                  ? "h-full w-full rounded-none"
-                  : "w-full max-w-5xl rounded-2xl"
-              }`}
+        <div className="rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+            <div>
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                Chat miestnosti
+              </h3>
+
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {selectedRoom.name}
+              </p>
+            </div>
+
+            <button
+              onClick={clearRoomChat}
+              className="rounded-xl bg-zinc-50 px-3 py-2 text-sm font-bold text-zinc-600 transition hover:bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
             >
-              <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
-                <div>
-                  <h3 className="text-lg font-black">
-                    Meeting: {selectedRoom.name}
-                  </h3>
+              Vymazať
+            </button>
+          </div>
 
-                  <p className="text-sm text-zinc-400">
-                    {roomEmployees.length} účastníkov v miestnosti
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setFullscreenMeeting(!fullscreenMeeting)}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-zinc-300 transition hover:bg-zinc-800"
-                  >
-                    {fullscreenMeeting ? (
-                      <Minimize2 size={18} />
-                    ) : (
-                      <Maximize2 size={18} />
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => setMeetingOpen(false)}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-zinc-300 transition hover:bg-zinc-800"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              </div>
-
+          <div className="max-h-80 space-y-1 overflow-y-auto p-4">
+            {messages.map((msg) => (
               <div
-                className={`grid gap-4 p-4 ${
-                  fullscreenMeeting
-                    ? "h-[calc(100vh-150px)] grid-cols-1 md:grid-cols-3"
-                    : "grid-cols-1 md:grid-cols-3"
-                }`}
+                key={msg.id}
+                className="rounded-xl px-3 py-3 transition hover:bg-zinc-50 dark:hover:bg-zinc-800"
               >
-                <div className="relative flex min-h-64 items-center justify-center rounded-2xl bg-zinc-900 md:col-span-2">
-                  {cameraOn ? (
-                    <div className="text-center">
-                      <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-600 text-3xl font-black">
-                        J
-                      </div>
-
-                      <p className="mt-4 text-sm font-bold">Ty</p>
-
-                      <p className="mt-1 text-xs text-green-400">
-                        Kamera zapnutá
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <CameraOff className="mx-auto text-zinc-500" size={42} />
-
-                      <p className="mt-4 text-sm font-bold text-zinc-300">
-                        Kamera je vypnutá
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-4 left-4 rounded-xl bg-black/40 px-3 py-2 text-sm font-bold backdrop-blur">
-                    Jaroslav
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-50 text-sm font-black text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                    {msg.user.charAt(0)}
                   </div>
 
-                  {!micOn && (
-                    <div className="absolute right-4 top-4 rounded-xl bg-red-600 px-3 py-2 text-xs font-bold">
-                      Mic off
-                    </div>
-                  )}
-                </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                        {msg.user}
+                      </span>
 
-                <div className="grid gap-4">
-                  {roomEmployees.slice(0, 3).map((employee) => (
-                    <div
-                      key={employee.id}
-                      className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900"
-                    >
-                      <div className="text-center">
-                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-lg font-black">
-                          {employee.name.charAt(0)}
-                        </div>
-
-                        <p className="mt-3 text-xs font-bold">
-                          {employee.name}
-                        </p>
-                      </div>
+                      <span className="text-xs text-zinc-400">{msg.time}</span>
                     </div>
-                  ))}
 
-                  {roomEmployees.length === 0 && (
-                    <div className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900 text-sm text-zinc-400">
-                      Žiadni zamestnanci
-                    </div>
-                  )}
+                    <p className="mt-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                      {msg.message}
+                    </p>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-800 px-5 py-4">
-                <div className="text-sm font-semibold text-zinc-400">
-                  Simulovaný meeting interface
-                </div>
+          <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    sendRoomMessage();
+                  }
+                }}
+                placeholder={`Napíš správu do ${selectedRoom.name}...`}
+                className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm outline-none transition focus:border-green-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
+              />
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setMicOn(!micOn)}
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
-                      micOn
-                        ? "bg-zinc-800 text-white hover:bg-zinc-700"
-                        : "bg-red-600 text-white hover:bg-red-700"
-                    }`}
-                  >
-                    {micOn ? <Mic size={19} /> : <MicOff size={19} />}
-                  </button>
-
-                  <button
-                    onClick={() => setCameraOn(!cameraOn)}
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
-                      cameraOn
-                        ? "bg-zinc-800 text-white hover:bg-zinc-700"
-                        : "bg-red-600 text-white hover:bg-red-700"
-                    }`}
-                  >
-                    {cameraOn ? <Camera size={19} /> : <CameraOff size={19} />}
-                  </button>
-
-                  <button
-                    onClick={() => setMeetingOpen(false)}
-                    className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600 text-white transition hover:bg-red-700"
-                  >
-                    <PhoneOff size={19} />
-                  </button>
-                </div>
-              </div>
+              <button
+                onClick={sendRoomMessage}
+                className="flex items-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-green-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-green-400"
+              >
+                <Send size={16} />
+                Odoslať
+              </button>
             </div>
           </div>
-        )}
-      </>
+        </div>
+      </div>
     );
   }
 
@@ -474,7 +452,7 @@ export default function RoomsGrid() {
           </h2>
 
           <p className="text-xs text-zinc-500 dark:text-zinc-400 md:text-sm">
-            Miestnosti sa načítavajú z globálneho state
+            Virtuálne kancelárie tímov
           </p>
         </div>
 
@@ -510,7 +488,7 @@ export default function RoomsGrid() {
               </h3>
 
               <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 md:text-sm">
-                Dynamická miestnosť
+                Otvoriť miestnosť
               </p>
 
               <div className="mt-4 rounded-xl bg-white px-4 py-2 text-center text-xs font-bold text-zinc-700 shadow-sm dark:bg-zinc-900 dark:text-zinc-300 md:text-sm">
