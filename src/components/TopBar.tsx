@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut, Menu, User } from "lucide-react";
 
-import { useOffice } from "../context/OfficeContext";
 import { useUserSettings } from "../context/UserSettingsContext";
 
 type TopBarProps = {
@@ -14,25 +13,21 @@ type TopBarProps = {
 export default function TopBar({ setMobileOpen }: TopBarProps) {
   const navigate = useNavigate();
 
-  const { employees } = useOffice();
-  const { avatar, activeUserId } = useUserSettings();
+  const { avatar } = useUserSettings();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const isLoggedIn = localStorage.getItem("ebbi-auth") === "true";
   const userEmail = localStorage.getItem("ebbi-user-email") || "pouzivatel@ebbi.sk";
 
-  const activeUser = employees.find(
-    (employee) => employee.id === activeUserId
-  );
+  const savedProfile = localStorage.getItem("employee-profile-1");
 
-  const initials =
-    activeUser?.name
-      ?.split(" ")
-      .map((part) => part.charAt(0))
-      .join("")
-      .slice(0, 2)
-      .toUpperCase() || "JP";
+  const profile = savedProfile ? JSON.parse(savedProfile) : null;
+
+  const firstName = profile?.firstName || "Jaro";
+  const lastName = profile?.lastName || "Pospíšil";
+
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 
   function handleLogout() {
     localStorage.removeItem("ebbi-auth");
@@ -84,7 +79,7 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
               <button
                 onClick={() => {
                   setUserMenuOpen(false);
-                  navigate(`/employee/${activeUser?.id || activeUserId}`);
+                  navigate("/employee/1");
                 }}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-zinc-700 transition hover:bg-zinc-50"
               >

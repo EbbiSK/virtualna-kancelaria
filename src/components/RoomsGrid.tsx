@@ -30,8 +30,14 @@ export default function RoomsGrid() {
   const isMeetingRoute =
     location.pathname === `/rooms/${roomSlug}/meeting`;
 
-  const fullName =
-    localStorage.getItem("ebbi-user-name") || "Jaro Pospíšil";
+  const savedProfile = localStorage.getItem("employee-profile-1");
+
+  const profile = savedProfile ? JSON.parse(savedProfile) : null;
+
+  const firstName = profile?.firstName || "Jaro";
+  const lastName = profile?.lastName || "Pospíšil";
+
+  const fullName = `${firstName} ${lastName}`;
 
   if (selectedRoom && isMeetingRoute) {
     return (
