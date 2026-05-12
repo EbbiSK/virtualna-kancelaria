@@ -17,42 +17,7 @@ import {
   Minimize2,
 } from "lucide-react";
 
-const rooms = [
-  {
-    id: 1,
-    slug: "manazment",
-    name: "Manažment",
-    users: 4,
-    status: "Aktívna",
-    description: "Strategické rozhodnutia, vedenie firmy a plánovanie.",
-  },
-  {
-    id: 2,
-    slug: "marketing",
-    name: "Marketing",
-    users: 7,
-    status: "Aktívna",
-    description: "Kampane, sociálne siete, obsah a komunikácia značky.",
-  },
-  {
-    id: 3,
-    slug: "it-kancelaria",
-    name: "IT kancelária",
-    users: 12,
-    status: "Najviac aktívna",
-    description: "Vývoj, technická podpora, bugy a produktové úlohy.",
-  },
-  {
-    id: 4,
-    slug: "support",
-    name: "Support",
-    users: 5,
-    status: "Aktívna",
-    description: "Zákaznícka podpora, požiadavky a riešenie ticketov.",
-  },
-];
-
-type Room = (typeof rooms)[0];
+import { useOffice, type Room } from "../context/OfficeContext";
 
 type RoomMessage = {
   id: number;
@@ -60,6 +25,15 @@ type RoomMessage = {
   message: string;
   time: string;
 };
+
+function createSlug(name: string) {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
 
 function getDefaultMessages(room: Room): RoomMessage[] {
   return [
@@ -76,7 +50,14 @@ export default function RoomsGrid() {
   const navigate = useNavigate();
   const { roomSlug } = useParams();
 
-  const selectedRoom = rooms.find((room) => room.slug === roomSlug) || null;
+  const { rooms, employees } = useOffice();
+
+  const selectedRoom =
+    rooms.find((room) => createSlug(room.name) === roomSlug) || null;
+
+  const roomEmployees = selectedRoom
+    ? employees.filter((employee) => employee.roomId === selectedRoom.id)
+    : [];
 
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<RoomMessage[]>([]);
@@ -162,11 +143,11 @@ export default function RoomsGrid() {
                 </h2>
 
                 <p className="mt-2 max-w-2xl text-zinc-500 dark:text-zinc-400">
-                  {selectedRoom.description}
+                  Dynamická miestnosť vytvorená v nastaveniach.
                 </p>
 
                 <p className="mt-3 text-sm font-semibold text-green-700 dark:text-green-400">
-                  URL: /rooms/{selectedRoom.slug}
+                  URL: /rooms/{createSlug(selectedRoom.name)}
                 </p>
               </div>
 
@@ -176,7 +157,7 @@ export default function RoomsGrid() {
                 </p>
 
                 <p className="mt-1 text-lg font-black text-green-700 dark:text-green-400">
-                  {selectedRoom.status}
+                  Aktívna
                 </p>
               </div>
             </div>
@@ -186,11 +167,11 @@ export default function RoomsGrid() {
                 <Users className="text-green-700 dark:text-green-400" size={22} />
 
                 <p className="mt-4 text-2xl font-black text-zinc-900 dark:text-white">
-                  {selectedRoom.users}
+                  {roomEmployees.length}
                 </p>
 
                 <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  používateľov online
+                  zamestnancov v miestnosti
                 </p>
               </div>
 
@@ -302,6 +283,35 @@ export default function RoomsGrid() {
               </div>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <h3 className="font-black text-zinc-900 dark:text-white">
+              Zamestnanci v miestnosti
+            </h3>
+
+            <div className="mt-4 space-y-2">
+              {roomEmployees.length === 0 && (
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  V tejto miestnosti zatiaľ nie sú priradení zamestnanci.
+                </p>
+              )}
+
+              {roomEmployees.map((employee) => (
+                <div
+                  key={employee.id}
+                  className="rounded-xl bg-zinc-50 px-4 py-3 dark:bg-zinc-950"
+                >
+                  <p className="font-bold text-zinc-900 dark:text-white">
+                    {employee.name}
+                  </p>
+
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {employee.role}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {meetingOpen && (
@@ -320,7 +330,7 @@ export default function RoomsGrid() {
                   </h3>
 
                   <p className="text-sm text-zinc-400">
-                    {selectedRoom.users} účastníkov online
+                    {roomEmployees.length} účastníkov v miestnosti
                   </p>
                 </div>
 
@@ -387,35 +397,28 @@ export default function RoomsGrid() {
                 </div>
 
                 <div className="grid gap-4">
-                  <div className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900">
-                    <div className="text-center">
-                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-lg font-black">
-                        M
+                  {roomEmployees.slice(0, 3).map((employee) => (
+                    <div
+                      key={employee.id}
+                      className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900"
+                    >
+                      <div className="text-center">
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-lg font-black">
+                          {employee.name.charAt(0)}
+                        </div>
+
+                        <p className="mt-3 text-xs font-bold">
+                          {employee.name}
+                        </p>
                       </div>
-
-                      <p className="mt-3 text-xs font-bold">Michaela</p>
                     </div>
-                  </div>
+                  ))}
 
-                  <div className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900">
-                    <div className="text-center">
-                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-lg font-black">
-                        P
-                      </div>
-
-                      <p className="mt-3 text-xs font-bold">Peter</p>
+                  {roomEmployees.length === 0 && (
+                    <div className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900 text-sm text-zinc-400">
+                      Žiadni zamestnanci
                     </div>
-                  </div>
-
-                  <div className="flex min-h-36 items-center justify-center rounded-2xl bg-zinc-900">
-                    <div className="text-center">
-                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-lg font-black">
-                        +{Math.max(selectedRoom.users - 3, 1)}
-                      </div>
-
-                      <p className="mt-3 text-xs font-bold">Ďalší</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -471,45 +474,51 @@ export default function RoomsGrid() {
           </h2>
 
           <p className="text-xs text-zinc-500 dark:text-zinc-400 md:text-sm">
-            Klikni na miestnosť a otvor ju
+            Miestnosti sa načítavajú z globálneho state
           </p>
         </div>
 
         <span className="rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-green-700 dark:bg-green-900/30 dark:text-green-400">
-          Live
+          {rooms.length} miestností
         </span>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {rooms.map((room) => (
-          <button
-            key={room.id}
-            onClick={() => navigate(`/rooms/${room.slug}`)}
-            className="rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-green-700 shadow-sm dark:bg-zinc-900 dark:text-green-400">
-                <DoorOpen size={18} />
+        {rooms.map((room) => {
+          const roomEmployeesCount = employees.filter(
+            (employee) => employee.roomId === room.id
+          ).length;
+
+          return (
+            <button
+              key={room.id}
+              onClick={() => navigate(`/rooms/${createSlug(room.name)}`)}
+              className="rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-green-700 shadow-sm dark:bg-zinc-900 dark:text-green-400">
+                  <DoorOpen size={18} />
+                </div>
+
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                  {roomEmployeesCount} ľudí
+                </span>
               </div>
 
-              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                {room.users} online
-              </span>
-            </div>
+              <h3 className="mt-3 text-sm font-bold text-zinc-900 dark:text-white md:text-base">
+                {room.name}
+              </h3>
 
-            <h3 className="mt-3 text-sm font-bold text-zinc-900 dark:text-white md:text-base">
-              {room.name}
-            </h3>
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 md:text-sm">
+                Dynamická miestnosť
+              </p>
 
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 md:text-sm">
-              {room.status}
-            </p>
-
-            <div className="mt-4 rounded-xl bg-white px-4 py-2 text-center text-xs font-bold text-zinc-700 shadow-sm dark:bg-zinc-900 dark:text-zinc-300 md:text-sm">
-              Vstúpiť
-            </div>
-          </button>
-        ))}
+              <div className="mt-4 rounded-xl bg-white px-4 py-2 text-center text-xs font-bold text-zinc-700 shadow-sm dark:bg-zinc-900 dark:text-zinc-300 md:text-sm">
+                Vstúpiť
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
@@ -8,51 +8,37 @@ import UpcomingMeetings from "./UpcomingMeetings";
 import OfficeChat from "./OfficeChat";
 import SettingsPanel from "./SettingsPanel";
 
+import { useOffice } from "../context/OfficeContext";
+import { useUserSettings } from "../context/UserSettingsContext";
+
 export default function HomeView() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { rooms, employees } = useOffice();
+
+  const {
+    darkMode,
+    setDarkMode,
+    avatar,
+    setAvatarFromFile,
+    removeAvatar,
+  } = useUserSettings();
+
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const [darkMode, setDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem("darkMode");
-    return savedTheme === "true";
-  });
-
-  const [avatar, setAvatar] = useState(() => {
-    return localStorage.getItem("userAvatar") || "";
-  });
-
-  useEffect(() => {
-    localStorage.setItem("darkMode", String(darkMode));
-  }, [darkMode]);
 
   function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const result = reader.result as string;
-      setAvatar(result);
-      localStorage.setItem("userAvatar", result);
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  function removeAvatar() {
-    setAvatar("");
-    localStorage.removeItem("userAvatar");
+    setAvatarFromFile(file);
   }
 
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
         <Sidebar
-          avatar={avatar}
           mobileOpen={mobileOpen}
           setMobileOpen={setMobileOpen}
         />
@@ -87,7 +73,7 @@ export default function HomeView() {
                     className="rounded-2xl border border-zinc-100 bg-zinc-50 p-6 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
                   >
                     <div className="text-3xl font-black text-green-700 dark:text-green-400">
-                      12
+                      {rooms.length}
                     </div>
 
                     <div className="mt-2 font-bold text-zinc-900 dark:text-white">
@@ -117,19 +103,19 @@ export default function HomeView() {
                   </button>
 
                   <button
-                    onClick={() => navigate("/calendar")}
+                    onClick={() => navigate("/settings")}
                     className="rounded-2xl border border-zinc-100 bg-zinc-50 p-6 text-left transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-green-800 dark:hover:bg-zinc-800"
                   >
                     <div className="text-3xl font-black text-green-700 dark:text-green-400">
-                      8
+                      {employees.length}
                     </div>
 
                     <div className="mt-2 font-bold text-zinc-900 dark:text-white">
-                      Meetingy
+                      Zamestnanci
                     </div>
 
                     <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                      Pozri dnešný kalendár
+                      Spravuj tím a miestnosti
                     </p>
                   </button>
                 </div>
@@ -149,6 +135,8 @@ export default function HomeView() {
                 avatar={avatar}
                 onAvatarUpload={handleAvatarUpload}
                 onRemoveAvatar={removeAvatar}
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
               />
             )}
 

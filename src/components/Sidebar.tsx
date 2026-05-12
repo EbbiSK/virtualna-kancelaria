@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 
 import { useNavigate, useLocation } from "react-router-dom";
+import { useUserSettings } from "../context/UserSettingsContext";
 
 type SidebarProps = {
-  avatar?: string;
   mobileOpen?: boolean;
   setMobileOpen?: (open: boolean) => void;
 };
@@ -44,17 +44,16 @@ const menu = [
 ];
 
 export default function Sidebar({
-  avatar,
   mobileOpen = false,
   setMobileOpen,
 }: SidebarProps) {
   const navigate = useNavigate();
-
   const location = useLocation();
+
+  const { avatar } = useUserSettings();
 
   function handleNavigate(path: string) {
     navigate(path);
-
     setMobileOpen?.(false);
   }
 
