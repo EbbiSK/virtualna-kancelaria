@@ -1,8 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import RoomsPage from "./pages/RoomsPage";
-import MeetingRoom from "./pages/MeetingRoom";
-import OfficeChat from "./pages/OfficeChat";
+import RoomsView from "./components/RoomsView";
+import RoomPanel from "./components/RoomPanel";
+import OfficeChat from "./components/OfficeChat";
 
 function App() {
   return (
@@ -10,9 +10,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/rooms" replace />} />
 
-        <Route path="/rooms" element={<RoomsPage />} />
+        <Route path="/rooms" element={<RoomsView />} />
 
-        <Route path="/meeting/:roomSlug" element={<MeetingRoom />} />
+        <Route path="/meeting/:roomSlug" element={<RoomPanel />} />
 
         <Route path="/chat" element={<OfficeChat />} />
 
