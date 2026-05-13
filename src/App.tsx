@@ -1,17 +1,7 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-
-import OfficeChat from "./components/OfficeChat";
+import HomeView from "./components/HomeView";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/chat" replace />} />
-
-      <Route path="/chat" element={<OfficeChat />} />
-
-      <Route path="/chat/:roomSlug" element={<OfficeChat />} />
-    </Routes>
-  );
+  return <HomeView />;
 }
 
 export default App;
