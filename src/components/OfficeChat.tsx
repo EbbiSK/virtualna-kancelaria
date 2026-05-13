@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Hash, Send, Trash2 } from "lucide-react";
 
@@ -51,6 +51,8 @@ export default function OfficeChat() {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
   const storageKey = selectedRoom
     ? `channelMessages-${selectedRoom.id}`
     : "companyChatMessages";
@@ -70,6 +72,12 @@ export default function OfficeChat() {
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(messages));
   }, [messages, storageKey]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   function sendMessage() {
     if (!inputValue.trim() || !activeUser) return;
@@ -197,7 +205,9 @@ export default function OfficeChat() {
                         </span>
                       )}
 
-                      <span className="text-xs text-zinc-400">{msg.time}</span>
+                      <span className="text-xs text-zinc-400">
+                        {msg.time}
+                      </span>
                     </div>
 
                     <p className="mt-1 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
@@ -208,6 +218,8 @@ export default function OfficeChat() {
               </div>
             );
           })}
+
+          <div ref={messagesEndRef} />
         </div>
 
         <div className="border-t border-zinc-100 p-4 dark:border-zinc-800">

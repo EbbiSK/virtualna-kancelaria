@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   DoorOpen,
   Video,
   MessageSquare,
   ArrowLeft,
+  Mic,
+  MicOff,
+  Camera,
+  CameraOff,
+  PhoneOff,
 } from "lucide-react";
 
 import { useOffice } from "../context/OfficeContext";
@@ -24,6 +30,9 @@ export default function RoomsGrid() {
 
   const { rooms } = useOffice();
 
+  const [micOn, setMicOn] = useState(true);
+  const [cameraOn, setCameraOn] = useState(true);
+
   const selectedRoom =
     rooms.find((room) => createSlug(room.name) === roomSlug) || null;
 
@@ -31,34 +40,135 @@ export default function RoomsGrid() {
     location.pathname === `/rooms/${roomSlug}/meeting`;
 
   const savedProfile = localStorage.getItem("employee-profile-1");
-
   const profile = savedProfile ? JSON.parse(savedProfile) : null;
 
   const firstName = profile?.firstName || "Jaro";
   const lastName = profile?.lastName || "Pospíšil";
 
   const fullName = `${firstName} ${lastName}`;
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 
   if (selectedRoom && isMeetingRoute) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950 text-white">
-        <div className="text-center">
-          <h2 className="text-4xl font-black">
-            Meeting: {selectedRoom.name}
-          </h2>
+      <div className="fixed inset-0 z-[100] bg-zinc-950 text-white">
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-zinc-800 px-8 py-5">
+            <div>
+              <h2 className="text-xl font-black">
+                Meeting · {selectedRoom.name}
+              </h2>
 
-          <p className="mt-3 text-zinc-400">
-            Virtuálny meeting room
-          </p>
+              <p className="mt-1 text-sm text-zinc-400">
+                Prihlásený používateľ: {fullName}
+              </p>
+            </div>
 
-          <button
-            onClick={() =>
-              navigate(`/rooms/${createSlug(selectedRoom.name)}`)
-            }
-            className="mt-8 rounded-2xl bg-red-600 px-6 py-4 text-sm font-black text-white transition hover:bg-red-700"
-          >
-            Ukončiť meeting
-          </button>
+            <button
+              onClick={() =>
+                navigate(`/rooms/${createSlug(selectedRoom.name)}`)
+              }
+              className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-bold text-zinc-300 transition hover:bg-zinc-800"
+            >
+              Zavrieť
+            </button>
+          </div>
+
+          <div className="grid flex-1 grid-cols-1 gap-6 p-8 xl:grid-cols-[1fr_320px]">
+            <div className="flex items-center justify-center rounded-3xl bg-zinc-900">
+              <div className="text-center">
+                {cameraOn ? (
+                  <>
+                    <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-green-600 text-4xl font-black text-white">
+                      {initials}
+                    </div>
+
+                    <h3 className="mt-6 text-2xl font-black">
+                      {fullName}
+                    </h3>
+
+                    <p className="mt-2 text-sm text-green-400">
+                      Kamera zapnutá
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-zinc-800 text-zinc-500">
+                      <CameraOff size={42} />
+                    </div>
+
+                    <h3 className="mt-6 text-2xl font-black">
+                      {fullName}
+                    </h3>
+
+                    <p className="mt-2 text-sm text-red-400">
+                      Kamera vypnutá
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-zinc-900 p-6">
+              <h3 className="text-lg font-black">
+                Účastníci
+              </h3>
+
+              <div className="mt-5 rounded-2xl bg-zinc-800 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-green-600 text-sm font-black text-white">
+                    {initials}
+                  </div>
+
+                  <div>
+                    <p className="font-bold">
+                      {fullName}
+                    </p>
+
+                    <p className="text-xs text-green-400">
+                      Online
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-zinc-800 p-4 text-sm text-zinc-400">
+                V miestnosti je aktuálne prihlásený používateľ.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-4 border-t border-zinc-800 px-8 py-5">
+            <button
+              onClick={() => setMicOn(!micOn)}
+              className={`flex h-14 w-14 items-center justify-center rounded-2xl transition ${
+                micOn
+                  ? "bg-zinc-800 hover:bg-zinc-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }`}
+            >
+              {micOn ? <Mic size={22} /> : <MicOff size={22} />}
+            </button>
+
+            <button
+              onClick={() => setCameraOn(!cameraOn)}
+              className={`flex h-14 w-14 items-center justify-center rounded-2xl transition ${
+                cameraOn
+                  ? "bg-zinc-800 hover:bg-zinc-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }`}
+            >
+              {cameraOn ? <Camera size={22} /> : <CameraOff size={22} />}
+            </button>
+
+            <button
+              onClick={() =>
+                navigate(`/rooms/${createSlug(selectedRoom.name)}`)
+              }
+              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600 transition hover:bg-red-700"
+            >
+              <PhoneOff size={22} />
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -91,7 +201,7 @@ export default function RoomsGrid() {
               </p>
             </div>
 
-            <h3 className="mt-12 text-3xl font-black text-green-800">
+            <h3 className="mt-12 text-base font-black text-green-800">
               {fullName}
             </h3>
           </div>
