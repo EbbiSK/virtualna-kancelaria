@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import RoomsView from "./components/RoomsView";
-import RoomPanel from "./components/RoomPanel";
+import { RoomPanel } from "./components/RoomPanel";
 import OfficeChat from "./components/OfficeChat";
 
 function App() {
