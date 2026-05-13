@@ -1,22 +1,25 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import HomeView from "./components/HomeView";
+import RoomsPage from "./pages/RoomsPage";
+import MeetingRoom from "./pages/MeetingRoom";
+import OfficeChat from "./pages/OfficeChat";
 
-export default function App() {
+function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/rooms" replace />} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/rooms" replace />} />
 
-      <Route path="/rooms" element={<HomeView />} />
-      <Route path="/rooms/:roomSlug" element={<HomeView />} />
-      <Route path="/rooms/:roomSlug/meeting" element={<HomeView />} />
+        <Route path="/rooms" element={<RoomsPage />} />
 
-      <Route path="/settings" element={<HomeView />} />
+        <Route path="/meeting/:roomSlug" element={<MeetingRoom />} />
 
-      <Route path="/employee/:employeeId" element={<HomeView />} />
-      <Route path="/employee/:employeeId/chat" element={<HomeView />} />
+        <Route path="/chat" element={<OfficeChat />} />
 
-      <Route path="*" element={<Navigate to="/rooms" replace />} />
-    </Routes>
+        <Route path="/chat/:roomSlug" element={<OfficeChat />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
