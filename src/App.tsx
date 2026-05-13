@@ -1,14 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import RoomsView from "./components/RoomsView";
 import OfficeChat from "./components/OfficeChat";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/rooms" replace />} />
-
-      <Route path="/rooms" element={<RoomsView />} />
+      <Route path="/" element={<Navigate to="/chat" replace />} />
 
       <Route path="/chat" element={<OfficeChat />} />
 
