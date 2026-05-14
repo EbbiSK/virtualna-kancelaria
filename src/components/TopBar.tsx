@@ -41,17 +41,17 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
       <div className="flex items-center gap-4">
         <button
           onClick={() => setMobileOpen?.(true)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-sm transition hover:border-green-500 xl:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-sm transition hover:border-green-500 xl:hidden dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-green-400"
         >
           <Menu size={18} />
         </button>
 
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-green-800">
+          <h1 className="text-2xl font-black tracking-tight text-green-800 dark:text-green-200">
             EBBI s.r.o.
           </h1>
 
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Virtuálna kancelária tímu
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
         <div className="relative">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-3 rounded-2xl border border-zinc-100 bg-white px-5 py-4 text-sm font-bold text-zinc-900 shadow-sm transition hover:border-green-200 hover:bg-green-50"
+            className="flex items-center gap-3 rounded-2xl border border-zinc-100 bg-white px-5 py-4 text-sm font-bold text-zinc-900 shadow-sm transition hover:border-green-200 hover:bg-green-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:border-green-300 dark:hover:bg-zinc-700"
           >
             <div className="relative">
               <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-green-600 text-sm font-black text-white">
@@ -85,13 +85,13 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
           </button>
 
           {userMenuOpen && (
-            <div className="absolute right-0 top-16 z-50 w-56 rounded-2xl border border-zinc-100 bg-white p-2 shadow-xl">
+            <div className="absolute right-0 top-16 z-50 w-56 rounded-2xl border border-zinc-100 bg-white p-2 shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
               <button
                 onClick={() => {
                   setUserMenuOpen(false);
                   navigate("/employee/1");
                 }}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-zinc-700 transition hover:bg-zinc-50"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-zinc-700 transition hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-700"
               >
                 <User size={17} />
                 Profil
@@ -99,7 +99,7 @@ export default function TopBar({ setMobileOpen }: TopBarProps) {
 
               <button
                 onClick={handleLogout}
-                className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-red-600 transition hover:bg-red-50"
+                className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900"
               >
                 <LogOut size={17} />
                 Odhlásiť sa

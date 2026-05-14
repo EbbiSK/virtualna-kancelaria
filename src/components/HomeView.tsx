@@ -35,22 +35,20 @@ export default function HomeView() {
   }
 
   return (
-    <div className={darkMode ? "dark" : ""}>
-      <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
-        <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
-        <main className="min-w-0 flex-1 px-4 py-6 md:px-6 md:py-8">
-          <div className="mx-auto max-w-7xl space-y-6">
-            <TopBar
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              setMobileOpen={setMobileOpen}
-            />
+      <main className="min-w-0 flex-1 px-4 py-6 md:px-6 md:py-8">
+        <div className="mx-auto max-w-7xl space-y-6">
+          <TopBar
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            setMobileOpen={setMobileOpen}
+          />
 
-            <Outlet />
-          </div>
-        </main>
-      </div>
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 }

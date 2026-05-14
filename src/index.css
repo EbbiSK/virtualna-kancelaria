@@ -11,6 +11,11 @@ body {
   color: #14532d;
 }
 
+.dark body {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #f1f5f9;
+}
+
 /* hlavné nadpisy a silné texty */
 h1,
 h2,
@@ -20,30 +25,62 @@ h5,
 h6,
 .font-bold,
 .font-extrabold {
-  color: #166534 !important;
+  color: #166534;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark .font-bold,
+.dark .font-extrabold {
+  color: #f1f5f9;
 }
 
 /* header */
 header {
   background: #ffffff;
-  border-color: #bbf7d0 !important;
+  border-color: #bbf7d0;
+}
+
+.dark header {
+  background: #1e293b;
+  border-color: #334155;
 }
 
 /* karty */
 .bg-white {
-  background-color: #ffffff !important;
+  background-color: #ffffff;
+}
+
+.dark .bg-white {
+  background-color: #1e293b;
 }
 
 .border-slate-200,
 .border-slate-300 {
-  border-color: #bbf7d0 !important;
+  border-color: #bbf7d0;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-300 {
+  border-color: #334155;
 }
 
 .shadow,
 .shadow-lg,
 .shadow-\[0_18px_45px_rgba\(15\,23\,42\,0\.10\)\],
 .shadow-\[0_20px_50px_rgba\(15\,23\,42\,0\.10\)\] {
-  box-shadow: 0 20px 50px rgba(22, 101, 52, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(22, 101, 52, 0.12);
+}
+
+.dark .shadow,
+.dark .shadow-lg,
+.dark .shadow-\[0_18px_45px_rgba\(15\,23\,42\,0\.10\)\],
+.dark .shadow-\[0_20px_50px_rgba\(15\,23\,42\,0\.10\)\] {
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3);
 }
 
 /* zelené texty */
@@ -51,30 +88,59 @@ header {
 .text-slate-900,
 .text-slate-800,
 .text-black {
-  color: #14532d !important;
+  color: #14532d;
+}
+
+.dark .text-slate-950,
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-black {
+  color: #f1f5f9;
 }
 
 .text-slate-700,
 .text-slate-600,
 .text-slate-500,
 .text-slate-400 {
-  color: #4d7c0f !important;
+  color: #4d7c0f;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-slate-400 {
+  color: #cbd5e1;
 }
 
 /* oranžové akčné tlačidlá */
 button.bg-slate-950,
 button.bg-black,
 button[type="submit"] {
-  background: #f97316 !important;
-  border-color: #f97316 !important;
-  color: #ffffff !important;
+  background: #f97316;
+  border-color: #f97316;
+  color: #ffffff;
+}
+
+.dark button.bg-slate-950,
+.dark button.bg-black,
+.dark button[type="submit"] {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
 }
 
 button.bg-slate-950:hover,
 button.bg-black:hover,
 button[type="submit"]:hover {
-  background: #ea580c !important;
-  border-color: #ea580c !important;
+  background: #ea580c;
+  border-color: #ea580c;
+}
+
+.dark button.bg-slate-950:hover,
+.dark button.bg-black:hover,
+.dark button[type="submit"]:hover {
+  background: #dc2626;
+  border-color: #dc2626;
 }
 
 /* všeobecné tlačidlá */
@@ -89,12 +155,23 @@ button:hover {
 /* inputy */
 input,
 textarea {
-  border-color: #bbf7d0 !important;
+  border-color: #bbf7d0;
+}
+
+.dark input,
+.dark textarea {
+  border-color: #334155;
 }
 
 input:focus,
 textarea:focus {
   outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}
+
+.dark input:focus,
+.dark textarea:focus {
+  outline: 2px solid #f97316;
   outline-offset: 2px;
 }
 

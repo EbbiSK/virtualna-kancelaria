@@ -1,4 +1,4 @@
-import { Building2, Settings, X } from "lucide-react";
+import { Building2, Settings, X, Sun, Moon, Home } from "lucide-react";
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -10,6 +10,11 @@ type SidebarProps = {
 };
 
 const menu = [
+  {
+    name: "Dashboard",
+    path: "/",
+    icon: Home,
+  },
   {
     name: "Miestnosti",
     path: "/rooms",
@@ -29,7 +34,7 @@ export default function Sidebar({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { avatar } = useUserSettings();
+  const { avatar, darkMode, setDarkMode } = useUserSettings();
 
   const savedProfile = localStorage.getItem("employee-profile-1");
   const profile = savedProfile ? JSON.parse(savedProfile) : null;
@@ -54,24 +59,24 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-200 bg-white transition-transform duration-300 xl:static xl:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-200 bg-white transition-transform duration-300 xl:static xl:translate-x-0 dark:border-zinc-700 dark:bg-zinc-900 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="border-b border-zinc-100 p-5">
+        <div className="border-b border-zinc-100 p-5 dark:border-zinc-700">
           <div className="flex flex-col items-center gap-3">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-green-50 text-green-700">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-300">
               <span className="text-4xl font-black">E</span>
             </div>
 
-            <h1 className="text-xl font-black text-green-800">
+            <h1 className="text-xl font-black text-green-800 dark:text-green-200">
               EBBI s.r.o.
             </h1>
           </div>
 
           <button
             onClick={() => setMobileOpen?.(false)}
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl text-zinc-500 hover:bg-zinc-100 xl:hidden"
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl text-zinc-500 hover:bg-zinc-100 xl:hidden dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             <X size={18} />
           </button>
@@ -91,8 +96,8 @@ export default function Sidebar({
                 onClick={() => handleNavigate(item.path)}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition ${
                   isActive
-                    ? "bg-green-50 text-green-700"
-                    : "text-zinc-600 hover:bg-zinc-100"
+                    ? "bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-300"
+                    : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
                 }`}
               >
                 <Icon size={18} />
@@ -102,8 +107,18 @@ export default function Sidebar({
           })}
         </nav>
 
-        <div className="border-t border-zinc-100 p-3">
-          <div className="rounded-2xl bg-zinc-50 p-3">
+        <div className="border-t border-zinc-100 p-3 dark:border-zinc-700">
+          <div className="mb-3 flex justify-center">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 transition hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+              title={darkMode ? "Prepnúť na svetlý režim" : "Prepnúť na tmavý režim"}
+            >
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+          </div>
+
+          <div className="rounded-2xl bg-zinc-50 p-3 dark:bg-zinc-800">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-green-600 text-sm font-black text-white">
@@ -118,15 +133,15 @@ export default function Sidebar({
                   )}
                 </div>
 
-                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500 dark:border-zinc-800" />
               </div>
 
               <div className="min-w-0">
-                <div className="truncate text-sm font-black text-green-800">
+                <div className="truncate text-sm font-black text-green-800 dark:text-green-200">
                   {fullName}
                 </div>
 
-                <div className="text-xs text-zinc-500">
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
                   Online
                 </div>
               </div>
